@@ -22,7 +22,7 @@
 | 🍲 | **找到同伴** | 食材卡六個情境任務。伙食團不只是煮飯，是用一道料理去感動另一個人——而願意一起煮的人，就是同伴 |
 | 🤝 | **實踐服務** | 三隻猴子：一個閉眼、一個只能比、一個只能說。服務現場的溝通就長這樣 |
 | 💎 | **開箱** | 全體大合照，然後打開箱子——裡面沒有金幣，只有剛剛那張照片 |
-| ⛵ | 終章 | 「寶藏就在你身上」，法船啟航影片 |
+| ⛵ | 終章 | 「寶藏就在你身上」，法船啟航影片（自動重播） |
 
 ## 開始之前
 
@@ -42,7 +42,7 @@
 ## 鍵盤
 
 <kbd>→</kbd> 下一步　<kbd>←</kbd> 上一步　<kbd>Esc</kbd> 跳關選單　<kbd>F</kbd> 全螢幕
-　<kbd>T</kbd> 計時器／合照倒數　<kbd>R</kbd> 重設本頁
+　<kbd>T</kbd> 計時器／合照倒數　<kbd>R</kbd> 重設本頁　<kbd>M</kbd> 配樂靜音
 
 ## 檔案
 
@@ -60,7 +60,9 @@ assets/
   cards-data.js                28 種食材卡與 6 個情境任務的參考解答
   monkeys-data.js              三隻猴子題庫
   qrcode.js                    自製 QR 產生器，不依賴任何外部服務
-media/ship_moving.mp4          結尾影片
+  quiz.mp3 cook.mp3            各關的配樂，跨關自動淡出淡入
+  volunteer.mp3
+media/ship_moving.mp4          結尾影片，自動重播
 docs/                          設定手冊與食材卡 PDF
 .github/workflows/deploy.yml   部署，順便把 secret 寫成 firebase-config.js
 ```

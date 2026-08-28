@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="assets/theme.css">
 <style>
   /* 字級跟著視窗走，投影機不管是 1024 還是 1920 都塞得剛好 */
-  html{font-size:clamp(13px, 0.62vw + 0.62vh, 30px);}
+  html{font-size:clamp(16px, 0.78vw + 0.78vh, 36px);}
 
   /* 藏寶圖：暖黃的舊紙，配上金、火橘、海水青 */
   body{
@@ -258,7 +258,7 @@
   .bar__n{font-size:1.6rem;font-weight:900;text-align:right;color:var(--flame);}
 
   /* ---------- 四象限地圖 ---------- */
-  .map{position:relative;width:min(92vw,100vh);aspect-ratio:3/2;}
+  .map{position:relative;width:min(92vw,118vh);aspect-ratio:16/9;--dot-size:1.7rem;}
   .map__grid{
     position:absolute;inset:0;border-radius:1.2rem;overflow:hidden;
     background:
@@ -276,17 +276,21 @@
   .map__axis.v{top:0;bottom:0;left:50%;width:.12rem;}
   .map__q{
     position:absolute;
-    padding:.6rem .9rem;
+    z-index:2;
+    margin:.4rem;
+    padding:.5rem .85rem;
+    border-radius:.8rem;
+    background:rgba(255,255,255,.74);
     font-weight:900;
     line-height:1.25;
   }
-  .map__q b{display:block;font-size:1.55rem;}
-  .map__q i{font-style:normal;font-size:1rem;color:var(--ink-2);}
+  .map__q b{display:block;font-size:2.2rem;}
+  .map__q i{font-style:normal;font-size:1.25rem;color:var(--ink-2);}
   .map__q.tl{top:0;left:0;text-align:left;}
   .map__q.tr{top:0;right:0;text-align:right;}
   .map__q.bl{bottom:0;left:0;text-align:left;}
   .map__q.br{bottom:0;right:0;text-align:right;}
-  .map__ax{position:absolute;font-size:.95rem;font-weight:900;color:var(--ink-2);opacity:.8;letter-spacing:.1em;}
+  .map__ax{position:absolute;z-index:2;font-size:1.35rem;font-weight:900;color:var(--ink-2);opacity:.85;letter-spacing:.1em;}
   .map__ax.up{top:.4rem;left:50%;transform:translateX(-50%);}
   .map__ax.down{bottom:.4rem;left:50%;transform:translateX(-50%);}
   .map__ax.left{left:.5rem;top:50%;transform:translateY(-50%);}
@@ -297,12 +301,12 @@
     transform:translate(-50%,-50%) scale(.4);
     opacity:0;
     display:flex;align-items:center;gap:.28rem;
-    padding:.2rem .65rem;
+    padding:.25rem .8rem;
     border-radius:999px;
     background:#fff;
-    border:.14rem solid currentColor;
-    box-shadow:0 .18rem .35rem rgba(90,52,18,.2);
-    font-size:1.05rem;
+    border:.16rem solid currentColor;
+    box-shadow:0 .2rem .4rem rgba(90,52,18,.22);
+    font-size:var(--dot-size);
     font-weight:900;
     white-space:nowrap;
     animation:land .5s cubic-bezier(.2,.9,.3,1.3) forwards;
@@ -310,7 +314,7 @@
   .dot span{color:var(--ink);}
   @keyframes land{to{opacity:1;transform:translate(-50%,-50%) scale(1);}}
 
-  .legend{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:1.1rem;font-size:1.05rem;font-weight:900;}
+  .legend{display:flex;flex-wrap:wrap;gap:1.1rem;justify-content:center;margin-top:1.1rem;font-size:1.45rem;font-weight:900;}
   .legend i{font-style:normal;}
 
   /* ---------- 六大類 ---------- */
@@ -525,6 +529,7 @@
   <button type="button" data-go="1">下一步 →</button>
   <button type="button" id="b-menu">跳關 (Esc)</button>
   <button type="button" id="b-full">全螢幕 (F)</button>
+  <button type="button" id="b-mute">🔊 音樂 (M)</button>
   <span class="grow" id="barinfo"></span>
   <span class="net" id="netinfo">連線中…</span>
 </div>
@@ -661,6 +666,7 @@
 
     renderRail();
     renderBar();
+    tune(sc.part);
     broadcast();
   }
 
@@ -867,40 +873,92 @@
 
     if (!pts.length) {
       box.insertAdjacentHTML("beforeend",
-        '<p class="quiet" style="position:absolute;inset:auto 0 45% 0;font-size:1.4rem">還沒有人作答</p>');
+        '<p class="quiet" style="position:absolute;inset:auto 0 45% 0;font-size:1.6rem">還沒有人作答</p>');
       return;
     }
 
-    // 用格子搶位子，保證名字不會疊在一起
-    var cols = 22, rows = 13;
-    var taken = {};
-    function free(c, r) {
-      return c >= 0 && r >= 0 && c < cols && r < rows && !taken[c + "," + r];
+    var W = box.clientWidth, H = box.clientHeight;
+    var BASE = 1.7;      // rem，人不多時的名牌字級
+    box.style.setProperty("--dot-size", BASE + "rem");
+
+    // 先照人格座標放上去
+    var items = pts.map(function (p, n) {
+      var t = QUIZ.TYPES[p.type];
+      var span = document.createElement("span");
+      span.className = "dot";
+      span.style.color = t.color;
+      span.style.animationDelay = (n * 0.04).toFixed(2) + "s";
+      span.innerHTML = t.emoji + "<span>" + esc(p.name) + "</span>";
+      box.appendChild(span);
+      return {
+        el: span,
+        x: (p.x + 1) / 2 * W + (Math.random() - 0.5) * 3,
+        y: (1 - p.y) / 2 * H + (Math.random() - 0.5) * 3
+      };
+    });
+
+    /* 量真實寬高。用 offsetWidth 而不是 getBoundingClientRect，
+       因為進場動畫有 scale，量到的會是縮小後的尺寸。 */
+    function measure() {
+      items.forEach(function (it) {
+        it.w = it.el.offsetWidth;
+        it.h = it.el.offsetHeight;
+      });
+    }
+    measure();
+
+    /* 名牌總面積不能佔地圖太多，不然怎麼推都會疊到。
+       超過就整批縮小再量一次——名字長短不同，用算的比寫死級距準。 */
+    var used = 0;
+    items.forEach(function (it) { used += (it.w + 10) * (it.h + 7); });
+    var room = 0.3 * W * H;
+    if (used > room) {
+      var k = Math.max(0.5, Math.sqrt(room / used));
+      box.style.setProperty("--dot-size", (BASE * k).toFixed(2) + "rem");
+      measure();
     }
 
-    pts.forEach(function (p, n) {
-      var c0 = Math.round((p.x + 1) / 2 * (cols - 1));
-      var r0 = Math.round((1 - p.y) / 2 * (rows - 1));
-      var c = c0, r = r0, found = free(c0, r0);
+    /* 一次掃完所有重疊、把位移累加起來再一起套用（並且加阻尼），
+       比邊掃邊移穩定很多，不然後面的推擠會把前面的成果推回去。 */
+    var padX = 8, padY = 5;
+    var dxs = new Array(items.length);
+    var dys = new Array(items.length);
 
-      for (var rad = 1; !found && rad < Math.max(cols, rows); rad++) {
-        for (var dr = -rad; dr <= rad && !found; dr++) {
-          for (var dc = -rad; dc <= rad && !found; dc++) {
-            if (Math.max(Math.abs(dr), Math.abs(dc)) !== rad) { continue; }
-            if (free(c0 + dc, r0 + dr)) { c = c0 + dc; r = r0 + dr; found = true; }
+    for (var iter = 0; iter < 400; iter++) {
+      var hit = false;
+      for (var z = 0; z < items.length; z++) { dxs[z] = 0; dys[z] = 0; }
+
+      for (var a = 0; a < items.length; a++) {
+        for (var b = a + 1; b < items.length; b++) {
+          var A = items[a], B = items[b];
+          var dx = B.x - A.x, dy = B.y - A.y;
+          var ox = (A.w + B.w) / 2 + padX - Math.abs(dx);
+          var oy = (A.h + B.h) / 2 + padY - Math.abs(dy);
+          if (ox <= 0 || oy <= 0) { continue; }
+          hit = true;
+
+          // 往比較好推的那個方向分開，通常是上下
+          if (oy <= ox) {
+            var sy = (dy >= 0 ? 1 : -1) * oy / 2;
+            dys[a] -= sy; dys[b] += sy;
+          } else {
+            var sx = (dx >= 0 ? 1 : -1) * ox / 2;
+            dxs[a] -= sx; dxs[b] += sx;
           }
         }
       }
-      if (!found) { return; }
-      taken[c + "," + r] = true;
 
-      var t = QUIZ.TYPES[p.type];
-      var left = (c + 0.5) / cols * 100;
-      var top = (r + 0.5) / rows * 100;
-      box.insertAdjacentHTML("beforeend",
-        '<span class="dot" style="left:' + left.toFixed(2) + "%;top:" + top.toFixed(2) +
-        "%;color:" + t.color + ";animation-delay:" + (n * 0.045).toFixed(2) + 's">' +
-        t.emoji + "<span>" + esc(p.name) + "</span></span>");
+      if (!hit) { break; }
+
+      for (var c = 0; c < items.length; c++) {
+        var it = items[c];
+        it.x = Math.max(it.w / 2 + 3, Math.min(W - it.w / 2 - 3, it.x + dxs[c] * 0.55));
+        it.y = Math.max(it.h / 2 + 3, Math.min(H - it.h / 2 - 3, it.y + dys[c] * 0.55));
+      }
+    }
+    items.forEach(function (it) {
+      it.el.style.left = it.x.toFixed(1) + "px";
+      it.el.style.top = it.y.toFixed(1) + "px";
     });
   };
 
@@ -1071,7 +1129,7 @@
   };
 
   VIEWS.video = function () {
-    return '<div class="video"><video src="media/ship_moving.mp4" controls playsinline></video></div>';
+    return '<div class="video"><video src="media/ship_moving.mp4" controls playsinline loop></video></div>';
   };
 
   AFTER.video = function (sc, el) {
@@ -1094,6 +1152,99 @@
     if (!url) { return; }
     try { $("qr2").innerHTML = QR.svg(url, { dark: "#40260F" }); } catch (e) { /* 忽略 */ }
   };
+
+  /* ============================================================
+     配樂
+
+     一關一首，跨關的時候淡出淡入。音量壓在 0.3 左右，
+     主持人講話蓋得過去。瀏覽器規定要先有互動才能播，
+     所以第一次是在主持人按下第一個鍵之後才會出聲。
+     ============================================================ */
+  var MUSIC = {
+    q1: "assets/quiz.mp3",
+    q2: "assets/cook.mp3",
+    q3: "assets/volunteer.mp3",
+    q4: "assets/volunteer.mp3"   // 開箱與大合照接著上一關的曲子
+  };
+
+  var VOLUME = 0.3;
+  var tracks = {};
+  var nowPlaying = null;
+  var nowSrc = "";
+  var muted = false;
+
+  function fadeTo(el, to, ms, done) {
+    clearInterval(el.fadeTimer);
+    var from = el.volume, t0 = Date.now();
+    el.fadeTimer = setInterval(function () {
+      var k = Math.min(1, (Date.now() - t0) / ms);
+      el.volume = Math.max(0, Math.min(1, from + (to - from) * k));
+      if (k >= 1) {
+        clearInterval(el.fadeTimer);
+        if (done) { done(); }
+      }
+    }, 40);
+  }
+
+  /** 切到這一關該放的曲子 */
+  function tune(part) {
+    var src = muted ? "" : (MUSIC[part] || "");
+    if (src === nowSrc) { return; }
+
+    if (nowPlaying) {
+      var old = nowPlaying;
+      fadeTo(old, 0, 700, function () { old.pause(); });
+    }
+
+    nowSrc = src;
+    paintMute();
+    if (!src) { nowPlaying = null; return; }
+
+    if (!tracks[src]) {
+      var a = new Audio(src);
+      a.loop = true;
+      a.preload = "auto";
+      a.volume = 0;
+      tracks[src] = a;
+    }
+
+    nowPlaying = tracks[src];
+    nowPlaying.volume = 0;
+    nowPlaying.play()["catch"](function () {
+      /* 還沒有互動就被擋掉，下一次按鍵會再試一次 */
+    });
+    fadeTo(nowPlaying, VOLUME, 900);
+  }
+
+  /** 被瀏覽器擋掉的話，主持人一按鍵就補播 */
+  function nudgeMusic() {
+    if (nowPlaying && nowPlaying.paused && !muted) {
+      nowPlaying.play()["catch"](function () {});
+      fadeTo(nowPlaying, VOLUME, 600);
+    }
+  }
+
+  function paintMute() {
+    var b = $("b-mute");
+    var name = nowSrc ? nowSrc.split("/").pop() : "無";
+    b.textContent = (muted ? "🔇" : "🔊") + " 音樂 (M)";
+    b.title = muted ? "已靜音" : ("目前播放：" + name);
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    if (muted) {
+      if (nowPlaying) {
+        var old = nowPlaying;
+        fadeTo(old, 0, 400, function () { old.pause(); });
+      }
+      nowPlaying = null;
+      nowSrc = "";
+    } else {
+      tune(S[i].part);
+    }
+    paintMute();
+  }
 
   /* ============================================================
      計時器
@@ -1154,6 +1305,7 @@
 
   document.addEventListener("keydown", function (e) {
     var sc = S[i];
+    nudgeMusic();
 
     if (e.key === "Escape") {
       e.preventDefault();
@@ -1188,6 +1340,8 @@
     var k = e.key.toLowerCase();
 
     if (k === "f") { toggleFull(); return; }
+
+    if (k === "m") { toggleMute(); return; }
 
     if (k === "t") {
       if (sc.kind === "photo") { runPhotoCountdown(); return; }
@@ -1254,6 +1408,8 @@
     if (b.hasAttribute("data-go")) { go(Number(b.getAttribute("data-go"))); }
     if (b.id === "b-menu") { toggleMenu(); }
     if (b.id === "b-full") { toggleFull(); }
+    if (b.id === "b-mute") { toggleMute(); }
+    nudgeMusic();
   });
 
   /* 滑鼠不動就把控制列收起來，投影幕上乾淨一點 */
@@ -1267,6 +1423,7 @@
   }
   document.addEventListener("mousemove", poke);
   poke();
+  paintMute();
 
   /* ============================================================
      連線
