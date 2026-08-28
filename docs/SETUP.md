@@ -18,23 +18,7 @@
    - 安全性規則先選「以測試模式啟動」，等一下會換掉。
 3. 左上角齒輪 **專案設定 → 一般 → 您的應用程式**，點 **`</>`（網頁）**，
    隨便取個暱稱、**不要**勾 Firebase Hosting，按註冊。
-4. 畫面會出現一段 `const firebaseConfig = { ... }`，把裡面的值抄進
-   [`assets/config.js`](../assets/config.js)：
-
-   ```js
-   firebase: {
-     apiKey: "AIza....",
-     authDomain: "cdvc-orientation.firebaseapp.com",
-     databaseURL: "https://cdvc-orientation-default-rtdb.asia-southeast1.firebasedatabase.app",
-     projectId: "cdvc-orientation",
-     appId: "1:123456789:web:abc123"
-   }
-   ```
-
-   > `databaseURL` 一定要有。它在 Realtime Database 頁面上方，
-   > 長得像 `https://xxx-default-rtdb.asia-southeast1.firebasedatabase.app`。
-   > 少了這一行，網頁會安靜地退回本機模式。
-
+4. 畫面會出現一段 `const firebaseConfig = { ... }`。**先放著，下一節會用到。**
 5. 回到 **Realtime Database → 規則**，整段換成：
 
    ```json
@@ -60,10 +44,38 @@
   再把規則改回 `".read": false, ".write": false`。
 - 免費方案同時上線人數上限是 100 人，迎新的規模綽綽有餘。
 
-### 2. 開 GitHub Pages
+### 2. 把 Firebase 設定存成 repo secret（不進 git）
 
-repo 設定裡：**Settings → Pages → Build and deployment → Source 選 `Deploy from a branch`**，
-branch 選 **`main` / `(root)`**，按 Save。等一兩分鐘，網站會出現在：
+先說清楚一件事：**Firebase 的 web API key 本來就不是密碼**。
+它只用來識別是哪一個專案，不授權任何存取；網站部署出去之後，任何人打開開發者工具
+都看得到它。真正的防線是上面那份資料庫規則，以及活動後把資料刪掉。
+
+即使如此，把它留在公開 repo 裡還是會被爬蟲掃到、被拿去亂打流量。所以這個專案的作法是：
+**設定值存在 GitHub secret，部署時才寫進網站。**
+
+1. repo → **Settings → Secrets and variables → Actions → New repository secret**
+2. Name 填 **`FIREBASE_CONFIG`**
+3. Secret 填一段 **JSON**（注意是 JSON，key 要加雙引號，跟 Firebase 給你的 JS 物件寫法略有不同）：
+
+   ```json
+   {
+     "apiKey": "AIza....",
+     "authDomain": "cdvc-orientation.firebaseapp.com",
+     "databaseURL": "https://cdvc-orientation-default-rtdb.asia-southeast1.firebasedatabase.app",
+     "projectId": "cdvc-orientation",
+     "appId": "1:123456789:web:abc123"
+   }
+   ```
+
+   > `databaseURL` 一定要有。它在 Realtime Database 頁面上方，
+   > 長得像 `https://xxx-default-rtdb.asia-southeast1.firebasedatabase.app`。
+   > 少了這一行，網頁會安靜地退回本機模式。
+
+4. **Settings → Pages → Build and deployment → Source** 選 **`GitHub Actions`**
+   （不是「Deploy from a branch」）。
+
+之後每次 push 到 `main`，[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
+會把 secret 寫成 `assets/firebase-config.js` 再部署。網站會在：
 
 ```
 https://ntustcdvc1979.github.io/orientation/
@@ -71,7 +83,24 @@ https://ntustcdvc1979.github.io/orientation/
 
 投影幕開 `.../orientation/stage.html`，新生掃到的是 `.../orientation/play.html?r=CDVC`。
 
-### 3. 印食材卡
+> 改了 secret 之後要重新跑一次部署才會生效：
+> repo → Actions → Deploy to GitHub Pages → Run workflow。
+
+### 3. 想在自己電腦上測
+
+複製一份設定檔，把值填進去：
+
+```bash
+cp assets/firebase-config.sample.js assets/firebase-config.js
+```
+
+`assets/firebase-config.js` 在 `.gitignore` 裡，不會被 commit 上去。
+不想連 Firebase 的話，內容寫 `window.CDVC_CONFIG.firebase = null;` 就好，
+會走本機模式（同一台電腦的分頁之間還是會同步，方便一個人測）。
+
+房號、社群連結這些不敏感的設定放在 [`assets/settings.js`](../assets/settings.js)，那支是進 git 的。
+
+### 4. 印食材卡
 
 [`docs/食材卡.pdf`](食材卡.pdf) 共 8 頁：
 
@@ -81,12 +110,12 @@ https://ntustcdvc1979.github.io/orientation/
 
 顏色就是分類：黃＝全穀雜糧、綠＝蔬菜、紫＝豆蛋、橘＝水果、藍＝乳品、紅＝油脂與堅果種子。
 
-### 4. 印 QR code
+### 5. 印 QR code
 
 開 [`index.html`](../index.html)，上面那張 QR 就是新生入口，
 螢幕截圖印出來貼在門口，新生一進場就可以先加入。
 
-> QR 裡面的房號是寫死的 `CDVC`（在 `assets/config.js` 改），
+> QR 裡面的房號是寫死的 `CDVC`（在 `assets/settings.js` 改），
 > 所以可以提前印，不會因為重開網頁就失效。
 
 ---
@@ -100,10 +129,9 @@ https://ntustcdvc1979.github.io/orientation/
    只有一個畫面也沒問題，控制列會自動隱藏。
 2. 瀏覽器開 `https://ntustcdvc1979.github.io/orientation/stage.html`。
 3. 看右下角：顯示 **● 已連線** 才算成功。
-   如果寫「本機模式」或「連線中斷」，先處理網路（見下面的備援）。
+   如果寫「本機模式」或「連線中斷」，先處理（見下面的備援）。
 4. 按 <kbd>F</kbd> 全螢幕。
-5. 自己拿手機掃一次 QR，確認名字有跳到投影幕上，再把手機那筆從 Firebase 刪掉
-   （或直接留著也行）。
+5. 自己拿手機掃一次 QR，確認名字有跳到投影幕上。
 
 ---
 
@@ -113,7 +141,7 @@ https://ntustcdvc1979.github.io/orientation/
 |---|---|
 | <kbd>→</kbd> / <kbd>空白</kbd> / <kbd>Enter</kbd> | 下一步 |
 | <kbd>←</kbd> | 上一步 |
-| <kbd>Esc</kbd> | 跳關選單（全部 56 個畫面，點一下直接跳） |
+| <kbd>Esc</kbd> | 跳關選單（全部 57 個畫面，點一下直接跳） |
 | <kbd>F</kbd> | 全螢幕 |
 | <kbd>T</kbd> | 食材卡任務：計時開始／暫停　·　大合照：開始 3・2・1 |
 | <kbd>R</kbd> | 重設這一頁（計時器歸零、猴子題庫重洗） |
@@ -123,24 +151,34 @@ https://ntustcdvc1979.github.io/orientation/
 
 ---
 
-## 四、流程與主持重點
+## 四、劇情線與主持重點
+
+整場是一條線：**認識自己 → 找到同伴 → 實踐服務 → 發現寶藏就在自己身上**。
+每一關結束都有一頁把那一段收掉，主持人照著念就有起承轉合。
 
 | 畫面 | 你要做什麼 |
 |---|---|
 | 封面 | 等大家掃 QR、輸入名字。人數會即時跳動，等到差不多再開始。 |
-| 序章 | 講四把鑰匙的故事。 |
-| 第一關 標題 | 「先搞清楚自己是哪一種人。」 |
+| 序章・四段旅程 | 攤開藏寶圖。**先埋伏筆**：「箱子裡的東西可能不是你想的那樣。」 |
+| 🧭 第一段 標題 | 「藏寶圖的第一條線索，是你自己。」 |
 | Q1–Q10（作答） | 念題目，等「已作答 N / M」追上再按 <kbd>→</kbd>。 |
 | Q1–Q10（統計） | 看長條圖，挑一兩個有趣的選項聊兩句。趕時間就直接跳過。 |
-| 四象限地圖 | **高潮**。名字會一個一個飛到自己的位置，讓大家找自己。 |
+| 四象限地圖 | **第一個高潮**。名字會一個一個飛到自己的位置，讓大家找自己。 |
 | 六種人格 | 每一頁最下面會列出這一區有誰，可以請他們站起來揮手。趕時間可以只講兩三種。 |
-| 第二關 六大類 | 卡片先發下去（每人 1–2 張），請大家依卡片顏色分成六區。 |
+| 🧭 第一段完成 | 收尾：「一個人拿著羅盤，還走不到寶藏。接下來要找的是同伴。」 |
+| 🍲 第二段 標題 | **這一關的主旨**：伙食團不只是煮飯，是用一道料理去感動另一個人。 |
+| 六大類 | 卡片先發下去（每人 1–2 張），請大家依卡片顏色分成六區。 |
 | 任務一～六 | 出情境 → <kbd>T</kbd> 開始計時 → 手上有解的人站起來舉卡 → 隨機請 2–3 位念出卡片上寫的功效 → <kbd>→</kbd> 公布解答。 |
-| 終極任務 | 全場合力配一餐，六大類至少四類。收尾講白米／豆腐／豆漿那段。 |
-| 第三關 規則 | 三個人一組排成一直線，說明三種猴子。 |
+| 終極任務 | 為一個人做一餐，六大類至少四類。每個上場的人要說「我這張卡是為他哪一件事準備的」。收尾講白米／豆腐／豆漿那段。 |
+| 🍲 第二段完成 | 收尾：「會為別人多想這一步的人，你剛剛都認識了。」 |
+| 🤝 第三段 標題 | 「知道自己是誰、身邊有誰之後，剩下的就是真的去做。」 |
+| 三隻猴子 規則 | 三個人一組排成一直線，說明三種猴子。 |
 | 三隻猴子 出題 | <kbd>→</kbd> 換題。比劃猴面對投影幕，另外兩位背對。 |
+| 🤝 第三段完成 | 收尾：「服務不是誰特別厲害，是三個人一起才成立。」 |
+| 💎 開箱 標題 | 「把箱子打開之前，先站在一起。」 |
 | 大合照 | 按 <kbd>T</kbd> 跑 3・2・1，攝影同學抓最後那張 📸。 |
-| 終章 | 四把鑰匙合體，按 <kbd>→</kbd> 播影片。 |
+| 💎 箱子打開了 | **收線**：「裡面沒有金幣，只有剛剛那張照片。」 |
+| 終章 | 「寶藏就在你身上。」講完按 <kbd>→</kbd> 播影片。 |
 | 影片 | 播完停在最後一格，按 <kbd>→</kbd> 到結束卡。 |
 
 食材卡任務的參考解答都寫在 [`assets/cards-data.js`](../assets/cards-data.js)，
@@ -152,7 +190,8 @@ https://ntustcdvc1979.github.io/orientation/
 
 **手機連不上／投影幕顯示「本機模式」**
 
-投影幕的鍵盤流程完全不受影響，可以照跑。差別只有：
+先確認 Actions 有跑成功、`FIREBASE_CONFIG` secret 有設。
+投影幕的鍵盤流程完全不受影響，可以照跑，差別只有：
 沒有名字牆、沒有作答統計、四象限地圖會是空的。
 
 臨時補救：第一關改成主持人念題目、新生舉手投票，投影幕當純簡報用。
@@ -180,3 +219,4 @@ https://ntustcdvc1979.github.io/orientation/
 1. Firebase 主控台 → Realtime Database → 把 `rooms` 節點刪掉。
 2. 規則改回 `".read": false, ".write": false`。
 3. 想留紀錄的話，刪之前先用主控台的「匯出 JSON」存一份。
+4. 用不到了的話，把 repo secret `FIREBASE_CONFIG` 一併刪掉。

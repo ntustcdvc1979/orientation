@@ -11,25 +11,48 @@
   /* 字級跟著視窗走，投影機不管是 1024 還是 1920 都塞得剛好 */
   html{font-size:clamp(13px, 0.62vw + 0.62vh, 30px);}
 
+  /* 藏寶圖：暖黃的舊紙，配上金、火橘、海水青 */
   body{
-    background:var(--sea);
-    color:var(--parchment);
+    background:var(--paper);
+    color:var(--ink);
     height:100vh;
     overflow:hidden;
     cursor:none;
   }
   body.show-ui{cursor:default;}
 
+  /* 底色的光暈與紙紋 */
   body::before{
     content:"";
     position:fixed;
     inset:0;
     z-index:0;
     background:
-      radial-gradient(60rem 40rem at 12% -10%, rgba(242,167,44,.16), transparent 60%),
-      radial-gradient(55rem 38rem at 92% 8%, rgba(169,206,59,.14), transparent 60%),
-      radial-gradient(70rem 50rem at 50% 115%, rgba(27,58,87,.9), transparent 65%);
+      radial-gradient(85rem 55rem at 6% -12%, rgba(233,163,23,.42), transparent 60%),
+      radial-gradient(75rem 52rem at 98% 2%, rgba(14,140,143,.26), transparent 58%),
+      radial-gradient(85rem 60rem at 52% 122%, rgba(226,98,28,.30), transparent 60%),
+      repeating-linear-gradient(48deg, rgba(122,85,38,.05) 0 2px, transparent 2px 10px);
   }
+
+  /* 舊紙的四邊燒灼感，讓亮底不會刺眼 */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    box-shadow:inset 0 0 16rem rgba(90,52,18,.34);
+  }
+
+  /* 裝飾層：羅盤、航線、藏寶點 */
+  .deco{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:.13;
+  }
+  .deco svg{width:100%;height:100%;}
 
   /* ---------- 版面骨架 ---------- */
   .rail{
@@ -45,26 +68,26 @@
   .rail__room{
     font-weight:900;
     letter-spacing:.12em;
-    color:var(--gold);
-    opacity:.85;
+    color:var(--ink-2);
   }
   .rail__keys{display:flex;gap:.55rem;margin-left:auto;}
   .rail__key{
-    width:2.6rem;height:2.6rem;
+    width:2.7rem;height:2.7rem;
     display:grid;place-items:center;
     border-radius:50%;
-    border:.12rem solid rgba(246,231,198,.22);
-    font-size:1.25rem;
+    border:.14rem solid rgba(122,85,38,.28);
+    background:rgba(255,255,255,.55);
+    font-size:1.3rem;
     filter:grayscale(1);
-    opacity:.35;
+    opacity:.4;
     transition:all .5s ease;
   }
   .rail__key.on{
     filter:none;
     opacity:1;
-    border-color:var(--gold);
-    background:rgba(245,196,81,.14);
-    box-shadow:0 0 1.5rem rgba(245,196,81,.35);
+    border-color:var(--flame);
+    background:#fff;
+    box-shadow:0 0 0 .22rem rgba(242,167,44,.35), 0 .3rem .8rem rgba(90,52,18,.18);
   }
 
   main.screen{
@@ -83,10 +106,9 @@
   .eyebrow{
     margin:0 0 .6rem;
     font-size:1.15rem;
-    font-weight:800;
+    font-weight:900;
     letter-spacing:.34em;
-    color:var(--gold);
-    opacity:.85;
+    color:var(--flame);
   }
   .huge{
     margin:0;
@@ -94,10 +116,11 @@
     font-weight:900;
     line-height:1.12;
     letter-spacing:.02em;
-    background:linear-gradient(180deg,#FFF3D2,var(--gold));
+    background:linear-gradient(150deg,#F2A72C 0%,#E2621C 48%,#C4453B 100%);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
+    filter:drop-shadow(0 .12rem 0 rgba(255,255,255,.85));
   }
   .big{margin:0;font-size:3.4rem;font-weight:900;line-height:1.25;}
   .mid{margin:0;font-size:2.1rem;font-weight:800;line-height:1.45;}
@@ -106,38 +129,56 @@
     max-width:52rem;
     font-size:1.6rem;
     line-height:1.7;
-    color:var(--foam);
+    color:var(--ink-2);
   }
-  .quiet{color:var(--foam);opacity:.72;}
-  .emoji{display:block;font-size:6rem;line-height:1.1;}
-
-  .panel{
-    border:.12rem solid rgba(246,231,198,.18);
-    border-radius:1.4rem;
-    background:rgba(18,41,63,.62);
-    padding:1.6rem 2rem;
-  }
+  .lede b{color:var(--flame);}
+  .quiet{color:var(--ink-2);opacity:.8;}
+  .emoji{display:block;font-size:6rem;line-height:1.1;
+    filter:drop-shadow(0 .3rem .5rem rgba(90,52,18,.22));}
 
   .chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
   .chip{
-    padding:.3rem 1rem;
+    padding:.3rem 1.05rem;
     border-radius:999px;
-    background:rgba(246,231,198,.12);
-    border:.08rem solid rgba(246,231,198,.2);
+    background:#fff;
+    border:.12rem solid rgba(122,85,38,.22);
+    box-shadow:0 .16rem 0 rgba(90,52,18,.10);
     font-size:1.15rem;
-    font-weight:700;
+    font-weight:800;
+    color:var(--ink);
   }
+
+  /* 序章的四段旅程 */
+  .beats{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;align-items:stretch;margin-top:1.8rem;}
+  .beat{
+    display:flex;flex-direction:column;justify-content:center;
+    min-width:11rem;
+    padding:1.1rem 1.3rem;
+    border-radius:1.1rem;
+    background:#fff;
+    border:.14rem solid rgba(122,85,38,.2);
+    box-shadow:0 .28rem 0 rgba(90,52,18,.12);
+  }
+  .beat b{display:block;font-size:2.6rem;line-height:1.1;}
+  .beat span{margin-top:.35rem;font-size:1.35rem;font-weight:900;}
+  .beat i{font-style:normal;font-size:.95rem;color:var(--ink-2);letter-spacing:.16em;}
+  .beat__arrow{align-self:center;font-size:2rem;color:var(--flame);opacity:.65;}
 
   /* ---------- 封面 ---------- */
   .cover{display:grid;grid-template-columns:1.25fr .75fr;gap:3.5rem;align-items:center;width:100%;max-width:88rem;text-align:left;}
   .cover__logo{width:7rem;height:auto;margin-bottom:1.2rem;}
   .cover__qr{text-align:center;}
-  .cover__qr .qr{width:min(26rem,30vw);margin:0 auto;}
-  .cover__scan{margin:.9rem 0 0;font-size:1.5rem;font-weight:900;color:var(--gold);}
-  .cover__url{margin:.2rem 0 0;font-size:1rem;word-break:break-all;opacity:.6;}
+  .cover__qr .qr{
+    width:min(26rem,30vw);
+    margin:0 auto;
+    border:.35rem solid #fff;
+    box-shadow:0 .5rem 1.4rem rgba(90,52,18,.28);
+  }
+  .cover__scan{margin:.9rem 0 0;font-size:1.5rem;font-weight:900;color:var(--flame);}
+  .cover__url{margin:.2rem 0 0;font-size:1rem;word-break:break-all;color:var(--ink-2);opacity:.75;}
 
   .crew{margin-top:1.6rem;}
-  .crew__count{font-size:2.4rem;font-weight:900;color:var(--green);}
+  .crew__count{font-size:2.4rem;font-weight:900;color:var(--teal);}
   .crew__names{
     margin-top:.7rem;
     display:flex;
@@ -151,7 +192,7 @@
 
   /* ---------- 題目 ---------- */
   .q{width:100%;max-width:80rem;}
-  .q__num{font-size:1.2rem;letter-spacing:.3em;color:var(--gold);font-weight:800;}
+  .q__num{font-size:1.2rem;letter-spacing:.3em;color:var(--flame);font-weight:900;}
   .q__title{margin:.5rem 0 2rem;font-size:3.6rem;font-weight:900;line-height:1.3;}
   .q__opts{
     display:grid;
@@ -167,37 +208,42 @@
     align-items:center;
     gap:1rem;
     padding:.85rem 1.3rem;
-    border:.1rem solid rgba(246,231,198,.2);
+    border:.14rem solid rgba(122,85,38,.2);
     border-radius:1rem;
-    background:rgba(18,41,63,.55);
+    background:#fff;
+    box-shadow:0 .22rem 0 rgba(90,52,18,.12);
     font-size:1.65rem;
-    font-weight:700;
+    font-weight:800;
   }
   .q__key{
     flex:none;
     width:2.5rem;height:2.5rem;
     display:grid;place-items:center;
     border-radius:50%;
-    background:rgba(245,196,81,.2);
-    color:var(--gold);
+    background:linear-gradient(135deg,var(--amber),var(--flame));
+    color:#fff;
     font-size:1.2rem;
     font-weight:900;
   }
   .q__done{margin-top:1.8rem;font-size:2rem;font-weight:900;}
-  .q__done b{color:var(--green);font-size:2.8rem;}
+  .q__done b{color:var(--teal);font-size:2.8rem;}
 
   /* 統計長條 */
   .bars{list-style:none;margin:0;padding:0;display:grid;gap:.7rem;width:100%;max-width:72rem;text-align:left;}
   .bar{display:grid;grid-template-columns:3rem 1fr 5rem;align-items:center;gap:1rem;}
   .bar__key{
     width:2.5rem;height:2.5rem;display:grid;place-items:center;border-radius:50%;
-    background:rgba(245,196,81,.2);color:var(--gold);font-weight:900;font-size:1.1rem;
+    background:linear-gradient(135deg,var(--amber),var(--flame));
+    color:#fff;font-weight:900;font-size:1.1rem;
   }
-  .bar__track{position:relative;height:3.1rem;border-radius:.7rem;background:rgba(246,231,198,.08);overflow:hidden;}
+  .bar__track{
+    position:relative;height:3.2rem;border-radius:.7rem;
+    background:#fff;border:.12rem solid rgba(122,85,38,.18);
+    overflow:hidden;
+  }
   .bar__fill{
     position:absolute;inset:0 auto 0 0;
-    border-radius:.7rem;
-    background:linear-gradient(90deg,var(--orange),var(--green));
+    background:linear-gradient(90deg,var(--amber),var(--flame));
     width:0;
     transition:width .9s cubic-bezier(.2,.8,.2,1);
   }
@@ -206,37 +252,41 @@
     inset:0;
     display:flex;align-items:center;
     padding:0 1rem;
-    font-size:1.35rem;font-weight:800;
-    color:#08202F;
-    mix-blend-mode:normal;
+    font-size:1.35rem;font-weight:900;
+    color:var(--ink);
   }
-  .bar__label span{text-shadow:0 0 .5rem rgba(255,255,255,.55);}
-  .bar__n{font-size:1.6rem;font-weight:900;text-align:right;color:var(--gold);}
+  .bar__n{font-size:1.6rem;font-weight:900;text-align:right;color:var(--flame);}
 
   /* ---------- 四象限地圖 ---------- */
   .map{position:relative;width:min(92vw,100vh);aspect-ratio:3/2;}
-  .map__grid{position:absolute;inset:0;border-radius:1.2rem;overflow:hidden;
+  .map__grid{
+    position:absolute;inset:0;border-radius:1.2rem;overflow:hidden;
     background:
-      linear-gradient(rgba(169,206,59,.07),rgba(169,206,59,.07)) ,
-      radial-gradient(circle at 50% 50%, rgba(245,196,81,.10), transparent 70%);
-    border:.12rem solid rgba(246,231,198,.16);}
-  .map__axis{position:absolute;background:rgba(246,231,198,.22);}
-  .map__axis.h{left:0;right:0;top:50%;height:.1rem;}
-  .map__axis.v{top:0;bottom:0;left:50%;width:.1rem;}
+      conic-gradient(from 0deg at 50% 50%,
+        rgba(226,98,28,.16)  0deg  90deg,
+        rgba(142,69,133,.16) 90deg 180deg,
+        rgba(127,180,50,.18) 180deg 270deg,
+        rgba(14,140,143,.16) 270deg 360deg),
+      #fff;
+    border:.16rem solid rgba(122,85,38,.24);
+    box-shadow:0 .5rem 1.2rem rgba(90,52,18,.16);
+  }
+  .map__axis{position:absolute;background:rgba(122,85,38,.3);}
+  .map__axis.h{left:0;right:0;top:50%;height:.12rem;}
+  .map__axis.v{top:0;bottom:0;left:50%;width:.12rem;}
   .map__q{
     position:absolute;
     padding:.6rem .9rem;
     font-weight:900;
     line-height:1.25;
-    opacity:.5;
   }
-  .map__q b{display:block;font-size:1.55rem;color:var(--gold);}
-  .map__q i{font-style:normal;font-size:1rem;}
+  .map__q b{display:block;font-size:1.55rem;}
+  .map__q i{font-style:normal;font-size:1rem;color:var(--ink-2);}
   .map__q.tl{top:0;left:0;text-align:left;}
   .map__q.tr{top:0;right:0;text-align:right;}
   .map__q.bl{bottom:0;left:0;text-align:left;}
   .map__q.br{bottom:0;right:0;text-align:right;}
-  .map__ax{position:absolute;font-size:.95rem;font-weight:800;opacity:.55;letter-spacing:.1em;}
+  .map__ax{position:absolute;font-size:.95rem;font-weight:900;color:var(--ink-2);opacity:.8;letter-spacing:.1em;}
   .map__ax.up{top:.4rem;left:50%;transform:translateX(-50%);}
   .map__ax.down{bottom:.4rem;left:50%;transform:translateX(-50%);}
   .map__ax.left{left:.5rem;top:50%;transform:translateY(-50%);}
@@ -247,19 +297,20 @@
     transform:translate(-50%,-50%) scale(.4);
     opacity:0;
     display:flex;align-items:center;gap:.28rem;
-    padding:.2rem .6rem;
+    padding:.2rem .65rem;
     border-radius:999px;
-    background:rgba(11,27,43,.86);
-    border:.1rem solid currentColor;
+    background:#fff;
+    border:.14rem solid currentColor;
+    box-shadow:0 .18rem .35rem rgba(90,52,18,.2);
     font-size:1.05rem;
-    font-weight:800;
+    font-weight:900;
     white-space:nowrap;
     animation:land .5s cubic-bezier(.2,.9,.3,1.3) forwards;
   }
-  .dot span{color:var(--parchment);}
+  .dot span{color:var(--ink);}
   @keyframes land{to{opacity:1;transform:translate(-50%,-50%) scale(1);}}
 
-  .legend{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:1.1rem;font-size:1.05rem;font-weight:700;}
+  .legend{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:1.1rem;font-size:1.05rem;font-weight:900;}
   .legend i{font-style:normal;}
 
   /* ---------- 六大類 ---------- */
@@ -272,22 +323,25 @@
     border-radius:.9rem;
     overflow:hidden;
     text-align:left;
+    background:#fff;
+    border:.12rem solid rgba(122,85,38,.18);
   }
-  .group__name{padding:.85rem 1.2rem;font-size:1.9rem;font-weight:900;}
-  .group__desc{font-size:1.3rem;line-height:1.5;padding-right:1rem;color:var(--foam);}
+  .group__name{padding:.9rem 1.2rem;font-size:1.9rem;font-weight:900;}
+  .group__desc{font-size:1.3rem;line-height:1.5;padding-right:1rem;color:var(--ink-2);}
 
   /* ---------- 任務 ---------- */
   .mission{width:100%;max-width:80rem;}
-  .mission__icon{font-size:5rem;line-height:1;}
+  .mission__icon{font-size:5rem;line-height:1;filter:drop-shadow(0 .3rem .5rem rgba(90,52,18,.22));}
   .mission__say{
     margin:1rem auto 0;
     max-width:56rem;
     padding:1.4rem 2rem;
-    border-left:.35rem solid var(--gold);
+    border-left:.4rem solid var(--flame);
     border-radius:.3rem 1rem 1rem .3rem;
-    background:rgba(245,196,81,.1);
+    background:#fff;
+    box-shadow:0 .3rem 0 rgba(90,52,18,.12);
     font-size:2.5rem;
-    font-weight:800;
+    font-weight:900;
     line-height:1.5;
     text-align:left;
   }
@@ -297,17 +351,19 @@
     font-weight:900;
     letter-spacing:.06em;
     font-variant-numeric:tabular-nums;
-    color:var(--green);
+    color:var(--teal);
   }
-  .timer.low{color:var(--orange);}
+  .timer.low{color:var(--flame);}
   .timer.zero{color:var(--err);animation:blink 1s steps(2) infinite;}
   @keyframes blink{50%{opacity:.25;}}
-  .timer small{display:block;font-size:1.1rem;font-weight:700;letter-spacing:.2em;color:var(--foam);opacity:.6;}
+  .timer small{display:block;font-size:1.1rem;font-weight:800;letter-spacing:.2em;color:var(--ink-2);opacity:.75;}
 
   .foods{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;margin:1.2rem 0 1rem;}
   .food{
     padding:.45rem 1.1rem;
     border-radius:.7rem;
+    border:.12rem solid rgba(64,38,15,.28);
+    box-shadow:0 .22rem 0 rgba(90,52,18,.18);
     font-size:1.7rem;
     font-weight:900;
     animation:pop .4s ease-out backwards;
@@ -316,7 +372,8 @@
     margin:.6rem auto 0;
     max-width:60rem;
     font-size:1.5rem;
-    color:var(--foam);
+    font-weight:800;
+    color:var(--ink-2);
   }
   .effects{
     margin:1rem auto 0;
@@ -328,29 +385,43 @@
     font-size:1.02rem;
     line-height:1.45;
   }
-  .effects div{padding:.45rem .8rem;border-radius:.6rem;background:rgba(246,231,198,.07);}
-  .effects b{color:var(--gold);}
+  .effects div{
+    padding:.45rem .8rem;border-radius:.6rem;
+    background:#fff;border:.1rem solid rgba(122,85,38,.16);
+    color:var(--ink-2);
+  }
+  .effects b{color:var(--flame);}
 
   /* ---------- 三隻猴子 ---------- */
   .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;width:100%;max-width:80rem;margin-top:1.6rem;}
-  .role{padding:1.5rem 1.2rem;border-radius:1.2rem;background:rgba(18,41,63,.6);border:.12rem solid rgba(246,231,198,.18);}
+  .role{
+    padding:1.5rem 1.2rem;border-radius:1.2rem;
+    background:#fff;border:.14rem solid rgba(122,85,38,.2);
+    box-shadow:0 .3rem 0 rgba(90,52,18,.12);
+  }
   .role__e{font-size:4rem;line-height:1;}
-  .role__n{font-size:1.9rem;font-weight:900;margin:.4rem 0 .5rem;color:var(--gold);}
-  .role__r{font-size:1.25rem;line-height:1.55;color:var(--foam);}
+  .role__n{font-size:1.9rem;font-weight:900;margin:.4rem 0 .5rem;color:var(--flame);}
+  .role__r{font-size:1.25rem;line-height:1.55;color:var(--ink-2);}
 
   .term{
     font-size:9rem;
     font-weight:900;
     line-height:1.1;
     letter-spacing:.04em;
-    background:linear-gradient(180deg,#FFF3D2,var(--gold));
+    background:linear-gradient(150deg,#F2A72C 0%,#E2621C 48%,#C4453B 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 .12rem 0 rgba(255,255,255,.85));
     animation:pop .35s ease-out;
   }
-  .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--foam);opacity:.6;}
+  .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--ink-2);opacity:.8;font-weight:800;}
 
   /* ---------- 大合照 ---------- */
-  .count3{font-size:16rem;font-weight:900;line-height:1;color:var(--gold);animation:pop .4s ease-out;}
+  .count3{
+    font-size:16rem;font-weight:900;line-height:1;
+    background:linear-gradient(150deg,#F2A72C,#E2621C 50%,#C4453B);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:pop .4s ease-out;
+  }
 
   /* ---------- 影片 ---------- */
   .video{position:fixed;inset:0;z-index:2;background:#000;display:grid;place-items:center;}
@@ -365,8 +436,10 @@
     align-items:center;
     gap:.75rem;
     padding:.55rem 1rem;
-    background:rgba(6,15,24,.92);
-    border-top:.08rem solid rgba(246,231,198,.14);
+    background:rgba(255,251,240,.96);
+    border-top:.1rem solid rgba(122,85,38,.25);
+    box-shadow:0 -.3rem .8rem rgba(90,52,18,.12);
+    color:var(--ink);
     font-size:.95rem;
     opacity:0;
     transform:translateY(110%);
@@ -376,32 +449,33 @@
   .bar-ui button{
     font-family:inherit;
     font-size:.95rem;
-    font-weight:800;
+    font-weight:900;
     padding:.35rem .9rem;
     border-radius:.55rem;
-    border:.08rem solid rgba(246,231,198,.25);
-    background:rgba(246,231,198,.08);
-    color:var(--parchment);
+    border:.1rem solid rgba(122,85,38,.3);
+    background:#fff;
+    color:var(--ink);
     cursor:pointer;
   }
-  .bar-ui button:hover{background:rgba(245,196,81,.2);border-color:var(--gold);}
-  .bar-ui .grow{flex:1;text-align:center;opacity:.85;}
+  .bar-ui button:hover{background:var(--paper-2);border-color:var(--flame);}
+  .bar-ui .grow{flex:1;text-align:center;color:var(--ink-2);}
   .bar-ui kbd{
     font:inherit;font-size:.8rem;padding:0 .3rem;border-radius:.25rem;
-    background:rgba(246,231,198,.15);border:.06rem solid rgba(246,231,198,.25);
+    background:var(--paper-2);border:.06rem solid rgba(122,85,38,.3);
   }
-  .net{font-weight:800;}
-  .net.on{color:var(--green);}
-  .net.off{color:var(--orange);}
+  .net{font-weight:900;}
+  .net.on{color:var(--teal);}
+  .net.off{color:var(--err);}
 
   /* ---------- 跳關選單 ---------- */
   .menu{
     position:fixed;inset:0;z-index:6;
-    background:rgba(6,15,24,.96);
+    background:rgba(253,242,216,.98);
     padding:2.5rem;
     overflow:auto;
+    color:var(--ink);
   }
-  .menu h2{margin:0 0 1rem;font-size:1.8rem;color:var(--gold);}
+  .menu h2{margin:0 0 1rem;font-size:1.8rem;color:var(--flame);}
   .menu ol{list-style:none;margin:0;padding:0;columns:3;column-gap:1.5rem;}
   .menu li{break-inside:avoid;margin-bottom:.3rem;}
   .menu button{
@@ -413,15 +487,31 @@
     border-radius:.5rem;
     border:none;
     background:transparent;
-    color:var(--parchment);
+    color:var(--ink);
     cursor:pointer;
   }
-  .menu button:hover{background:rgba(245,196,81,.18);}
-  .menu button.now{background:rgba(245,196,81,.28);font-weight:900;color:var(--gold);}
-  .menu .part{margin-top:.8rem;font-size:.9rem;letter-spacing:.2em;color:var(--gold);opacity:.7;}
+  .menu button:hover{background:#fff;}
+  .menu button.now{background:var(--flame);color:#fff;font-weight:900;}
+  .menu .part{margin-top:.8rem;font-size:.9rem;letter-spacing:.2em;color:var(--flame);font-weight:900;}
 </style>
 </head>
 <body>
+
+<div class="deco" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <path d="M120 780 C 380 700, 300 500, 560 470 S 900 520, 1010 360 S 1280 250, 1470 150"
+          fill="none" stroke="#8C3A1E" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="26 26"/>
+    <g transform="translate(1330 720)" stroke="#5A3412" fill="none" stroke-width="5">
+      <circle r="130"/><circle r="104"/>
+      <path d="M0 -150 L26 -26 L150 0 L26 26 L0 150 L-26 26 L-150 0 L-26 -26 Z" fill="#8C3A1E" stroke="none"/>
+      <path d="M0 -120 L0 120 M-120 0 L120 0" stroke-width="3"/>
+    </g>
+    <g transform="translate(200 190)" stroke="#B0362C" stroke-width="16" stroke-linecap="round">
+      <path d="M-46 -46 L46 46 M46 -46 L-46 46"/>
+    </g>
+  </svg>
+</div>
 
 <div class="rail">
   <span class="rail__room" id="railroom"></span>
@@ -444,7 +534,8 @@
   <ol id="menulist"></ol>
 </div>
 
-<script src="assets/config.js"></script>
+<script src="assets/settings.js"></script>
+<script src="assets/firebase-config.js"></script>
 <script src="assets/qrcode.js"></script>
 <script src="assets/quiz-data.js"></script>
 <script src="assets/cards-data.js"></script>
@@ -470,14 +561,15 @@
   }
 
   /* ============================================================
-     流程：一維陣列，主持人只要一直按右鍵就會走完
+     劇情：認識自己 → 找到同伴 → 實踐服務 → 發現寶藏就在自己身上
+     流程是一維陣列，主持人一直按右鍵就會走完
      ============================================================ */
   var PARTS = {
-    intro: { name: "序章" },
-    q1: { name: "第一關・羅盤", key: "🧭" },
-    q2: { name: "第二關・補給", key: "🍲" },
-    q3: { name: "第三關・傳聲", key: "📣" },
-    q4: { name: "第四關・船員", key: "📸" },
+    intro: { name: "序章・藏寶圖" },
+    q1: { name: "第一關・認識自己", key: "🧭" },
+    q2: { name: "第二關・找到同伴", key: "🍲" },
+    q3: { name: "第三關・實踐服務", key: "🤝" },
+    q4: { name: "第四關・開箱", key: "💎" },
     end: { name: "終章・啟航" }
   };
 
@@ -485,9 +577,9 @@
   function add(o) { S.push(o); }
 
   add({ part: "intro", kind: "cover", label: "封面・QR code" });
-  add({ part: "intro", kind: "rules", label: "序章：四把鑰匙" });
+  add({ part: "intro", kind: "rules", label: "序章：四段旅程" });
 
-  add({ part: "q1", kind: "partTitle", label: "第一關 標題" });
+  add({ part: "q1", kind: "partTitle", label: "第一關 標題・認識自己" });
   QUIZ.QUESTIONS.forEach(function (q, i) {
     add({ part: "q1", kind: "question", qi: i, sub: "answer", label: "Q" + (i + 1) + "　" + q.q });
     add({ part: "q1", kind: "question", qi: i, sub: "stats", label: "Q" + (i + 1) + " 統計" });
@@ -496,26 +588,27 @@
   QUIZ.ORDER.forEach(function (k) {
     add({ part: "q1", kind: "persona", pkey: k, label: "人格　" + QUIZ.TYPES[k].name });
   });
-  add({ part: "q1", kind: "key", n: 1, label: "🔑 取得羅盤" });
+  add({ part: "q1", kind: "key", n: 1, label: "🧭 第一段旅程完成" });
 
-  add({ part: "q2", kind: "partTitle", label: "第二關 標題" });
+  add({ part: "q2", kind: "partTitle", label: "第二關 標題・找到同伴" });
   add({ part: "q2", kind: "groups", label: "六大類熱身" });
   CARDS.MISSIONS.forEach(function (m, i) {
     add({ part: "q2", kind: "mission", mi: i, sub: "ask", label: m.title });
     add({ part: "q2", kind: "mission", mi: i, sub: "reveal", label: "└ 公布解答" });
   });
-  add({ part: "q2", kind: "finalMission", label: "終極任務・配一餐" });
-  add({ part: "q2", kind: "key", n: 2, label: "🔑 取得糧食" });
+  add({ part: "q2", kind: "finalMission", label: "終極任務・為一個人做一餐" });
+  add({ part: "q2", kind: "key", n: 2, label: "🍲 第二段旅程完成" });
 
-  add({ part: "q3", kind: "partTitle", label: "第三關 標題" });
+  add({ part: "q3", kind: "partTitle", label: "第三關 標題・實踐服務" });
   add({ part: "q3", kind: "monkeyRules", label: "三隻猴子 規則" });
   add({ part: "q3", kind: "monkeyPlay", label: "★ 三隻猴子 出題" });
-  add({ part: "q3", kind: "key", n: 3, label: "🔑 取得號角" });
+  add({ part: "q3", kind: "key", n: 3, label: "🤝 第三段旅程完成" });
 
+  add({ part: "q4", kind: "partTitle", label: "第四關 標題・開箱" });
   add({ part: "q4", kind: "photo", label: "★ 大合照" });
-  add({ part: "q4", kind: "key", n: 4, label: "🔑 取得船員名冊" });
+  add({ part: "q4", kind: "key", n: 4, label: "💎 箱子打開了" });
 
-  add({ part: "end", kind: "finale", label: "終章：四鑰合一" });
+  add({ part: "end", kind: "finale", label: "終章：寶藏就在你身上" });
   add({ part: "end", kind: "video", label: "▶ 法船影片" });
   add({ part: "end", kind: "outro", label: "結束卡" });
 
@@ -529,7 +622,7 @@
   var termAt = 0;
   var photoCount = 0;
 
-  /** 已經走過的關卡拿到幾把鑰匙 */
+  /** 已經走過的關卡收集到幾段旅程 */
   function keysWon() {
     var won = {};
     for (var n = 0; n <= i; n++) {
@@ -603,7 +696,7 @@
           '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社">' +
           '<p class="eyebrow">台科大崇德志工社 迎新</p>' +
           '<h1 class="huge">尋寶啟航</h1>' +
-          '<p class="lede">四把鑰匙，藏在四段旅程裡。<br>拿齊了，法船才開得走。</p>' +
+          '<p class="lede">傳說島上藏著一箱寶藏。<br>四段旅程走完，你就會知道它在哪裡。</p>' +
           '<div class="crew">' +
             '<div class="crew__count"><span id="cnt">0</span> 位夥伴上船了</div>' +
             '<div class="crew__names" id="names"></div>' +
@@ -619,7 +712,7 @@
 
   AFTER.cover = function () {
     try {
-      $("qr").innerHTML = QR.svg(NET.playUrl(), { dark: "#0B1B2B" });
+      $("qr").innerHTML = QR.svg(NET.playUrl(), { dark: "#40260F" });
     } catch (e) {
       $("qr").innerHTML = '<p style="color:#333;padding:1rem">QR 產生失敗，請直接念網址</p>';
     }
@@ -636,24 +729,38 @@
     }).join("");
   }
 
+  var BEATS = [
+    ["🧭", "認識自己", "第一段"],
+    ["🍲", "找到同伴", "第二段"],
+    ["🤝", "實踐服務", "第三段"],
+    ["💎", "發現寶藏", "終　點"]
+  ];
+
   VIEWS.rules = function () {
     return '' +
-      '<p class="eyebrow">序章</p>' +
-      '<h1 class="huge">四把鑰匙</h1>' +
-      '<div class="chips" style="margin-top:2rem;font-size:1.4rem">' +
-        '<span class="chip">🧭 羅盤　認識自己</span>' +
-        '<span class="chip">🍲 糧食　餵飽別人</span>' +
-        '<span class="chip">📣 號角　好好說話</span>' +
-        '<span class="chip">📸 名冊　成為夥伴</span>' +
-      '</div>' +
-      '<p class="lede">每過一關拿一把鑰匙。<br>四把湊齊，我們就一起上船。</p>';
+      '<p class="eyebrow">序章・藏寶圖</p>' +
+      '<h1 class="huge">四段旅程</h1>' +
+      '<div class="beats">' +
+        BEATS.map(function (b, n) {
+          return (n ? '<span class="beat__arrow">→</span>' : "") +
+            '<div class="beat"><b>' + b[0] + "</b>" +
+            "<span>" + esc(b[1]) + "</span>" +
+            "<i>" + esc(b[2]) + "</i></div>";
+        }).join("") +
+      "</div>" +
+      '<p class="lede">走完四段，箱子就會打開。<br>先說好——<b>裡面的東西可能不是你想的那樣</b>。</p>';
   };
 
   VIEWS.partTitle = function (sc) {
     var meta = {
-      q1: ["🧭", "第一關", "羅盤", "先搞清楚自己是哪一種人，<br>才知道要往哪裡走。"],
-      q2: ["🍲", "第二關", "補給倉庫", "伙食團教你的不只是煮飯，<br>是怎麼用食材的特性解決問題。"],
-      q3: ["📣", "第三關", "迷霧傳聲", "看得到的不能說，說得出的看不到。<br>這就是每一次出隊的日常。"]
+      q1: ["🧭", "第一段旅程", "認識自己",
+           "藏寶圖的第一條線索，是你自己。<br>知道你是誰，才知道要往哪裡走。"],
+      q2: ["🍲", "第二段旅程", "找到同伴",
+           "伙食團不只是煮飯，<br>是用一道料理去<b>感動另一個人</b>。<br>而願意一起煮的那些人，就是同伴。"],
+      q3: ["🤝", "第三段旅程", "實踐服務",
+           "知道自己是誰、身邊有誰之後，剩下的就是真的去做。<br>看得到的不能說，說得出的看不到——這就是服務現場。"],
+      q4: ["💎", "終　　點", "開箱",
+           "四段旅程走完了。<br>把箱子打開之前，先站在一起。"]
     }[sc.part];
     return '' +
       '<span class="emoji">' + meta[0] + "</span>" +
@@ -727,7 +834,8 @@
   /* ---------- 四象限地圖 ---------- */
   VIEWS.map = function () {
     var qs = QUIZ.QUADRANTS.map(function (q) {
-      return '<div class="map__q ' + q.at + '"><b>' + esc(q.title) + "</b><i>" + esc(q.sub) + "</i></div>";
+      return '<div class="map__q ' + q.at + '"><b style="color:' + q.color + '">' +
+             esc(q.title) + "</b><i>" + esc(q.sub) + "</i></div>";
     }).join("");
 
     return '' +
@@ -804,10 +912,9 @@
 
     return '' +
       '<span class="emoji">' + t.emoji + "</span>" +
-      '<h1 class="huge" style="background:linear-gradient(180deg,#fff,' + t.color + ');' +
-        '-webkit-background-clip:text;background-clip:text;color:transparent">' + esc(t.name) + "</h1>" +
+      '<h1 class="big" style="color:' + t.color + '">' + esc(t.name) + "</h1>" +
       '<p class="eyebrow" style="margin-top:.4rem">' + esc(t.en) + "</p>" +
-      '<p class="big" style="margin-top:1.2rem;color:' + t.color + '">' + esc(t.tagline) + "</p>" +
+      '<p class="mid" style="margin-top:1rem">' + esc(t.tagline) + "</p>" +
       '<p class="lede">' + esc(t.desc) + "</p>" +
       '<div class="chips" style="margin-top:1.2rem">' +
         t.traits.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") +
@@ -822,14 +929,18 @@
 
   VIEWS.key = function (sc) {
     var meta = {
-      1: ["🧭", "羅盤", "你知道自己是哪一種人了。<br>接下來，看看你能為別人做什麼。"],
-      2: ["🍲", "糧食", "在伙食團，我們不只是把飯煮熟。<br>我們學會看懂每一種食材，然後把它用在對的人身上。"],
-      3: ["📣", "號角", "說得清楚、聽得進去、願意等對方，<br>服務的現場靠的就是這個。"],
-      4: ["📸", "船員名冊", "名字都記下來了。<br>從今天起，你是這艘船上的人。"]
+      1: ["🧭", "認識自己　✓",
+          "你知道自己是哪一種人了。<br>但一個人拿著羅盤，還走不到寶藏。<br><b>接下來要找的是同伴。</b>"],
+      2: ["🍲", "找到同伴　✓",
+          "在伙食團，我們不只是把飯煮熟。<br>是想著今天誰累了、誰感冒了，<br><b>然後用一道菜讓他覺得被在乎</b>。<br>會為別人多想這一步的人，你剛剛都認識了。"],
+      3: ["🤝", "實踐服務　✓",
+          "說得清楚、聽得進去、願意等對方。<br>這就是我們每一次出隊在做的事。<br><b>服務不是誰特別厲害，是三個人一起才成立。</b>"],
+      4: ["💎", "箱子打開了",
+          "裡面沒有金幣。<br>只有剛剛那張照片。"]
     }[sc.n];
 
     return '' +
-      '<p class="eyebrow">第 ' + sc.n + " 把鑰匙　到手</p>" +
+      '<p class="eyebrow">第 ' + sc.n + " 段旅程</p>" +
       '<span class="emoji" style="font-size:9rem">' + meta[0] + "</span>" +
       '<h1 class="huge">' + esc(meta[1]) + "</h1>" +
       '<p class="lede">' + meta[2] + "</p>";
@@ -843,7 +954,7 @@
       '<div class="groups">' +
         CARDS.GROUP_ORDER.map(function (k) {
           var g = CARDS.GROUPS[k];
-          return '<div class="group" style="background:rgba(246,231,198,.06)">' +
+          return '<div class="group">' +
             '<div class="group__name" style="background:' + g.color + ";color:" + g.ink + '">' +
               esc(g.name) + "</div>" +
             '<div class="group__desc">' + esc(g.desc) + "</div>" +
@@ -861,7 +972,7 @@
           '<span class="mission__icon">' + m.icon + "</span>" +
           '<p class="eyebrow">' + esc(m.title) + "</p>" +
           '<p class="mission__say">' + esc(m.situation) + "</p>" +
-          '<p class="lede" style="font-weight:800;color:var(--gold)">' + esc(m.hint) +
+          '<p class="lede" style="font-weight:900"><b>' + esc(m.hint) + "</b>" +
             '<br><span class="quiet" style="font-size:1.2rem">手上的卡片有解的，站起來舉高</span></p>' +
           '<div class="timer" id="clock">--:--<small>討論時間</small></div>' +
         "</div>";
@@ -869,7 +980,7 @@
 
     return '' +
       '<p class="eyebrow">' + esc(m.title) + "　·　參考解答</p>" +
-      '<h1 class="big" style="color:var(--gold)">' + esc(m.key) + "</h1>" +
+      '<h1 class="big" style="color:var(--flame)">' + esc(m.key) + "</h1>" +
       '<div class="foods">' +
         m.answers.map(function (name, n) {
           var c = CARDS.card(name);
@@ -896,16 +1007,16 @@
     return '' +
       '<span class="emoji">🍱</span>' +
       '<p class="eyebrow">終極任務</p>' +
-      '<h1 class="big">幫這位學長配一餐</h1>' +
+      '<h1 class="big">為一個人做一餐</h1>' +
       '<p class="mission__say" style="font-size:2.1rem">' +
-        "「熬夜、便祕、想減重、明天還要早起去淨灘。」" +
+        "「熬夜、便祕、想減重，明天還要早起去淨灘。」" +
       "</p>" +
-      '<p class="lede">全場一起出牌，<b style="color:var(--gold)">六大類至少湊到四類</b>，<br>' +
-        "每個上場的人要說出：我這張卡負責解決哪一件事。</p>" +
+      '<p class="lede">全場一起出牌，<b>六大類至少湊到四類</b>。<br>' +
+        "每個上場的人要說一句：<b>我這張卡，是為他哪一件事準備的。</b></p>" +
       '<p class="lede quiet" style="font-size:1.3rem">' +
         "順帶一提——<b>白米、豆腐、豆漿</b>這三張卡上面什麼功效都沒寫。<br>" +
         "它們不是萬靈丹，卻是伙食團每一餐的底。<br>" +
-        "有些付出就是這樣，不會被寫在卡片上，但少了就不成一餐。</p>";
+        "有些心意也是這樣，不會被寫在卡片上，但少了就不成一餐。</p>";
   };
 
   /* ---------- 第三關 ---------- */
@@ -940,20 +1051,22 @@
       '<span class="emoji">📸</span>' +
       '<h1 class="huge">全體船員集合</h1>' +
       '<p class="lede">往中間靠，後排站高一點，<br>手上的食材卡舉起來。</p>' +
-      '<p class="big" style="margin-top:1.5rem;color:var(--gold)">口號：崇德——志工！</p>' +
+      '<p class="big" style="margin-top:1.5rem;color:var(--flame)">口號：崇德——志工！</p>' +
       '<p class="quiet" style="margin-top:1rem;font-size:1.2rem">主持人按 <kbd>T</kbd> 開始 3・2・1</p>';
   };
 
   VIEWS.finale = function () {
     return '' +
-      '<div class="chips" style="font-size:3rem;gap:1.5rem;margin-bottom:1.5rem">' +
-        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">🧭</span>' +
-        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">🍲</span>' +
-        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">📣</span>' +
-        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">📸</span>' +
+      '<div class="beats" style="margin-bottom:1.6rem">' +
+        BEATS.map(function (b, n) {
+          return (n ? '<span class="beat__arrow">→</span>' : "") +
+            '<div class="beat" style="min-width:8rem"><b>' + b[0] + "</b>" +
+            "<span>" + esc(b[1]) + "</span></div>";
+        }).join("") +
       "</div>" +
-      '<h1 class="huge">四把鑰匙，湊齊了</h1>' +
-      '<p class="lede">寶藏從來不在箱子裡。<br>是這一整船的人。</p>' +
+      '<h1 class="huge">寶藏就在你身上</h1>' +
+      '<p class="lede">你們找了一整晚——<br>認識了自己，遇到了同伴，也真的動手做了一次。<br>' +
+        "<b>那些東西，早就跟著你走進這個場地了。</b></p>" +
       '<p class="eyebrow" style="margin-top:2rem">按 → 啟航</p>';
   };
 
@@ -971,14 +1084,15 @@
       '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社" style="width:9rem">' +
       '<h1 class="huge">歡迎上船</h1>' +
       '<p class="lede">每週三 18:30，伙食團等你來開伙。</p>' +
-      '<div class="qr" id="qr2" style="width:16rem;margin:1.5rem auto 0"></div>' +
+      '<div class="qr" id="qr2" style="width:16rem;margin:1.5rem auto 0;border:.35rem solid #fff;' +
+        'box-shadow:0 .4rem 1rem rgba(90,52,18,.25)"></div>' +
       '<p class="eyebrow" style="margin-top:.8rem">追蹤我們</p>';
   };
 
   AFTER.outro = function () {
     var url = (window.CDVC_CONFIG || {}).socialUrl;
     if (!url) { return; }
-    try { $("qr2").innerHTML = QR.svg(url, { dark: "#0B1B2B" }); } catch (e) { /* 忽略 */ }
+    try { $("qr2").innerHTML = QR.svg(url, { dark: "#40260F" }); } catch (e) { /* 忽略 */ }
   };
 
   /* ============================================================
@@ -1165,13 +1279,10 @@
 
   NET.init("stage").then(function (r) {
     var el = $("netinfo");
-    if (r.mode === "firebase") {
-      el.className = "net off";
-      el.textContent = "● 連線中…";
-    } else {
-      el.className = "net off";
-      el.textContent = "● 本機模式（手機連不上，鍵盤照常可用）";
-    }
+    el.className = "net off";
+    el.textContent = (r.mode === "firebase")
+      ? "● 連線中…"
+      : "● 本機模式：找不到 Firebase 設定（鍵盤照常可用）";
     broadcast();
   });
 
