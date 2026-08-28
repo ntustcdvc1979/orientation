@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>尋寶啟航｜投影幕 - 台科大崇德志工社迎新</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo1.webp">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  /* 字級跟著視窗走，投影機不管是 1024 還是 1920 都塞得剛好 */
+  html{font-size:clamp(13px, 0.62vw + 0.62vh, 30px);}
+
+  body{
+    background:var(--sea);
+    color:var(--parchment);
+    height:100vh;
+    overflow:hidden;
+    cursor:none;
+  }
+  body.show-ui{cursor:default;}
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:
+      radial-gradient(60rem 40rem at 12% -10%, rgba(242,167,44,.16), transparent 60%),
+      radial-gradient(55rem 38rem at 92% 8%, rgba(169,206,59,.14), transparent 60%),
+      radial-gradient(70rem 50rem at 50% 115%, rgba(27,58,87,.9), transparent 65%);
+  }
+
+  /* ---------- 版面骨架 ---------- */
+  .rail{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:3;
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    padding:1rem 2rem;
+    font-size:1rem;
+  }
+  .rail__room{
+    font-weight:900;
+    letter-spacing:.12em;
+    color:var(--gold);
+    opacity:.85;
+  }
+  .rail__keys{display:flex;gap:.55rem;margin-left:auto;}
+  .rail__key{
+    width:2.6rem;height:2.6rem;
+    display:grid;place-items:center;
+    border-radius:50%;
+    border:.12rem solid rgba(246,231,198,.22);
+    font-size:1.25rem;
+    filter:grayscale(1);
+    opacity:.35;
+    transition:all .5s ease;
+  }
+  .rail__key.on{
+    filter:none;
+    opacity:1;
+    border-color:var(--gold);
+    background:rgba(245,196,81,.14);
+    box-shadow:0 0 1.5rem rgba(245,196,81,.35);
+  }
+
+  main.screen{
+    position:relative;
+    z-index:1;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:4.5rem 3.5rem 4rem;
+    text-align:center;
+  }
+
+  /* ---------- 共用零件 ---------- */
+  .eyebrow{
+    margin:0 0 .6rem;
+    font-size:1.15rem;
+    font-weight:800;
+    letter-spacing:.34em;
+    color:var(--gold);
+    opacity:.85;
+  }
+  .huge{
+    margin:0;
+    font-size:5.2rem;
+    font-weight:900;
+    line-height:1.12;
+    letter-spacing:.02em;
+    background:linear-gradient(180deg,#FFF3D2,var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .big{margin:0;font-size:3.4rem;font-weight:900;line-height:1.25;}
+  .mid{margin:0;font-size:2.1rem;font-weight:800;line-height:1.45;}
+  .lede{
+    margin:1.2rem auto 0;
+    max-width:52rem;
+    font-size:1.6rem;
+    line-height:1.7;
+    color:var(--foam);
+  }
+  .quiet{color:var(--foam);opacity:.72;}
+  .emoji{display:block;font-size:6rem;line-height:1.1;}
+
+  .panel{
+    border:.12rem solid rgba(246,231,198,.18);
+    border-radius:1.4rem;
+    background:rgba(18,41,63,.62);
+    padding:1.6rem 2rem;
+  }
+
+  .chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+  .chip{
+    padding:.3rem 1rem;
+    border-radius:999px;
+    background:rgba(246,231,198,.12);
+    border:.08rem solid rgba(246,231,198,.2);
+    font-size:1.15rem;
+    font-weight:700;
+  }
+
+  /* ---------- 封面 ---------- */
+  .cover{display:grid;grid-template-columns:1.25fr .75fr;gap:3.5rem;align-items:center;width:100%;max-width:88rem;text-align:left;}
+  .cover__logo{width:7rem;height:auto;margin-bottom:1.2rem;}
+  .cover__qr{text-align:center;}
+  .cover__qr .qr{width:min(26rem,30vw);margin:0 auto;}
+  .cover__scan{margin:.9rem 0 0;font-size:1.5rem;font-weight:900;color:var(--gold);}
+  .cover__url{margin:.2rem 0 0;font-size:1rem;word-break:break-all;opacity:.6;}
+
+  .crew{margin-top:1.6rem;}
+  .crew__count{font-size:2.4rem;font-weight:900;color:var(--green);}
+  .crew__names{
+    margin-top:.7rem;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.4rem;
+    max-height:9rem;
+    overflow:hidden;
+  }
+  .crew__names .chip{font-size:1rem;animation:pop .45s ease-out;}
+  @keyframes pop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+
+  /* ---------- 題目 ---------- */
+  .q{width:100%;max-width:80rem;}
+  .q__num{font-size:1.2rem;letter-spacing:.3em;color:var(--gold);font-weight:800;}
+  .q__title{margin:.5rem 0 2rem;font-size:3.6rem;font-weight:900;line-height:1.3;}
+  .q__opts{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:.8rem;
+    list-style:none;
+    margin:0;padding:0;
+    text-align:left;
+  }
+  .q__opts.one{grid-template-columns:1fr;max-width:50rem;margin:0 auto;}
+  .q__opt{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    padding:.85rem 1.3rem;
+    border:.1rem solid rgba(246,231,198,.2);
+    border-radius:1rem;
+    background:rgba(18,41,63,.55);
+    font-size:1.65rem;
+    font-weight:700;
+  }
+  .q__key{
+    flex:none;
+    width:2.5rem;height:2.5rem;
+    display:grid;place-items:center;
+    border-radius:50%;
+    background:rgba(245,196,81,.2);
+    color:var(--gold);
+    font-size:1.2rem;
+    font-weight:900;
+  }
+  .q__done{margin-top:1.8rem;font-size:2rem;font-weight:900;}
+  .q__done b{color:var(--green);font-size:2.8rem;}
+
+  /* 統計長條 */
+  .bars{list-style:none;margin:0;padding:0;display:grid;gap:.7rem;width:100%;max-width:72rem;text-align:left;}
+  .bar{display:grid;grid-template-columns:3rem 1fr 5rem;align-items:center;gap:1rem;}
+  .bar__key{
+    width:2.5rem;height:2.5rem;display:grid;place-items:center;border-radius:50%;
+    background:rgba(245,196,81,.2);color:var(--gold);font-weight:900;font-size:1.1rem;
+  }
+  .bar__track{position:relative;height:3.1rem;border-radius:.7rem;background:rgba(246,231,198,.08);overflow:hidden;}
+  .bar__fill{
+    position:absolute;inset:0 auto 0 0;
+    border-radius:.7rem;
+    background:linear-gradient(90deg,var(--orange),var(--green));
+    width:0;
+    transition:width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar__label{
+    position:absolute;
+    inset:0;
+    display:flex;align-items:center;
+    padding:0 1rem;
+    font-size:1.35rem;font-weight:800;
+    color:#08202F;
+    mix-blend-mode:normal;
+  }
+  .bar__label span{text-shadow:0 0 .5rem rgba(255,255,255,.55);}
+  .bar__n{font-size:1.6rem;font-weight:900;text-align:right;color:var(--gold);}
+
+  /* ---------- 四象限地圖 ---------- */
+  .map{position:relative;width:min(92vw,100vh);aspect-ratio:3/2;}
+  .map__grid{position:absolute;inset:0;border-radius:1.2rem;overflow:hidden;
+    background:
+      linear-gradient(rgba(169,206,59,.07),rgba(169,206,59,.07)) ,
+      radial-gradient(circle at 50% 50%, rgba(245,196,81,.10), transparent 70%);
+    border:.12rem solid rgba(246,231,198,.16);}
+  .map__axis{position:absolute;background:rgba(246,231,198,.22);}
+  .map__axis.h{left:0;right:0;top:50%;height:.1rem;}
+  .map__axis.v{top:0;bottom:0;left:50%;width:.1rem;}
+  .map__q{
+    position:absolute;
+    padding:.6rem .9rem;
+    font-weight:900;
+    line-height:1.25;
+    opacity:.5;
+  }
+  .map__q b{display:block;font-size:1.55rem;color:var(--gold);}
+  .map__q i{font-style:normal;font-size:1rem;}
+  .map__q.tl{top:0;left:0;text-align:left;}
+  .map__q.tr{top:0;right:0;text-align:right;}
+  .map__q.bl{bottom:0;left:0;text-align:left;}
+  .map__q.br{bottom:0;right:0;text-align:right;}
+  .map__ax{position:absolute;font-size:.95rem;font-weight:800;opacity:.55;letter-spacing:.1em;}
+  .map__ax.up{top:.4rem;left:50%;transform:translateX(-50%);}
+  .map__ax.down{bottom:.4rem;left:50%;transform:translateX(-50%);}
+  .map__ax.left{left:.5rem;top:50%;transform:translateY(-50%);}
+  .map__ax.right{right:.5rem;top:50%;transform:translateY(-50%);}
+
+  .dot{
+    position:absolute;
+    transform:translate(-50%,-50%) scale(.4);
+    opacity:0;
+    display:flex;align-items:center;gap:.28rem;
+    padding:.2rem .6rem;
+    border-radius:999px;
+    background:rgba(11,27,43,.86);
+    border:.1rem solid currentColor;
+    font-size:1.05rem;
+    font-weight:800;
+    white-space:nowrap;
+    animation:land .5s cubic-bezier(.2,.9,.3,1.3) forwards;
+  }
+  .dot span{color:var(--parchment);}
+  @keyframes land{to{opacity:1;transform:translate(-50%,-50%) scale(1);}}
+
+  .legend{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:1.1rem;font-size:1.05rem;font-weight:700;}
+  .legend i{font-style:normal;}
+
+  /* ---------- 六大類 ---------- */
+  .groups{display:grid;gap:.6rem;width:100%;max-width:78rem;}
+  .group{
+    display:grid;
+    grid-template-columns:14rem 1fr;
+    align-items:center;
+    gap:1.2rem;
+    border-radius:.9rem;
+    overflow:hidden;
+    text-align:left;
+  }
+  .group__name{padding:.85rem 1.2rem;font-size:1.9rem;font-weight:900;}
+  .group__desc{font-size:1.3rem;line-height:1.5;padding-right:1rem;color:var(--foam);}
+
+  /* ---------- 任務 ---------- */
+  .mission{width:100%;max-width:80rem;}
+  .mission__icon{font-size:5rem;line-height:1;}
+  .mission__say{
+    margin:1rem auto 0;
+    max-width:56rem;
+    padding:1.4rem 2rem;
+    border-left:.35rem solid var(--gold);
+    border-radius:.3rem 1rem 1rem .3rem;
+    background:rgba(245,196,81,.1);
+    font-size:2.5rem;
+    font-weight:800;
+    line-height:1.5;
+    text-align:left;
+  }
+  .timer{
+    margin-top:1.6rem;
+    font-size:5.5rem;
+    font-weight:900;
+    letter-spacing:.06em;
+    font-variant-numeric:tabular-nums;
+    color:var(--green);
+  }
+  .timer.low{color:var(--orange);}
+  .timer.zero{color:var(--err);animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:.25;}}
+  .timer small{display:block;font-size:1.1rem;font-weight:700;letter-spacing:.2em;color:var(--foam);opacity:.6;}
+
+  .foods{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;margin:1.2rem 0 1rem;}
+  .food{
+    padding:.45rem 1.1rem;
+    border-radius:.7rem;
+    font-size:1.7rem;
+    font-weight:900;
+    animation:pop .4s ease-out backwards;
+  }
+  .why{
+    margin:.6rem auto 0;
+    max-width:60rem;
+    font-size:1.5rem;
+    color:var(--foam);
+  }
+  .effects{
+    margin:1rem auto 0;
+    max-width:74rem;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:.5rem;
+    text-align:left;
+    font-size:1.02rem;
+    line-height:1.45;
+  }
+  .effects div{padding:.45rem .8rem;border-radius:.6rem;background:rgba(246,231,198,.07);}
+  .effects b{color:var(--gold);}
+
+  /* ---------- 三隻猴子 ---------- */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;width:100%;max-width:80rem;margin-top:1.6rem;}
+  .role{padding:1.5rem 1.2rem;border-radius:1.2rem;background:rgba(18,41,63,.6);border:.12rem solid rgba(246,231,198,.18);}
+  .role__e{font-size:4rem;line-height:1;}
+  .role__n{font-size:1.9rem;font-weight:900;margin:.4rem 0 .5rem;color:var(--gold);}
+  .role__r{font-size:1.25rem;line-height:1.55;color:var(--foam);}
+
+  .term{
+    font-size:9rem;
+    font-weight:900;
+    line-height:1.1;
+    letter-spacing:.04em;
+    background:linear-gradient(180deg,#FFF3D2,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:pop .35s ease-out;
+  }
+  .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--foam);opacity:.6;}
+
+  /* ---------- 大合照 ---------- */
+  .count3{font-size:16rem;font-weight:900;line-height:1;color:var(--gold);animation:pop .4s ease-out;}
+
+  /* ---------- 影片 ---------- */
+  .video{position:fixed;inset:0;z-index:2;background:#000;display:grid;place-items:center;}
+  .video video{width:100%;height:100%;object-fit:contain;background:#000;}
+
+  /* ---------- 控制列 ---------- */
+  .bar-ui{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+    padding:.55rem 1rem;
+    background:rgba(6,15,24,.92);
+    border-top:.08rem solid rgba(246,231,198,.14);
+    font-size:.95rem;
+    opacity:0;
+    transform:translateY(110%);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  body.show-ui .bar-ui{opacity:1;transform:none;}
+  .bar-ui button{
+    font-family:inherit;
+    font-size:.95rem;
+    font-weight:800;
+    padding:.35rem .9rem;
+    border-radius:.55rem;
+    border:.08rem solid rgba(246,231,198,.25);
+    background:rgba(246,231,198,.08);
+    color:var(--parchment);
+    cursor:pointer;
+  }
+  .bar-ui button:hover{background:rgba(245,196,81,.2);border-color:var(--gold);}
+  .bar-ui .grow{flex:1;text-align:center;opacity:.85;}
+  .bar-ui kbd{
+    font:inherit;font-size:.8rem;padding:0 .3rem;border-radius:.25rem;
+    background:rgba(246,231,198,.15);border:.06rem solid rgba(246,231,198,.25);
+  }
+  .net{font-weight:800;}
+  .net.on{color:var(--green);}
+  .net.off{color:var(--orange);}
+
+  /* ---------- 跳關選單 ---------- */
+  .menu{
+    position:fixed;inset:0;z-index:6;
+    background:rgba(6,15,24,.96);
+    padding:2.5rem;
+    overflow:auto;
+  }
+  .menu h2{margin:0 0 1rem;font-size:1.8rem;color:var(--gold);}
+  .menu ol{list-style:none;margin:0;padding:0;columns:3;column-gap:1.5rem;}
+  .menu li{break-inside:avoid;margin-bottom:.3rem;}
+  .menu button{
+    width:100%;
+    text-align:left;
+    font-family:inherit;
+    font-size:1.02rem;
+    padding:.35rem .7rem;
+    border-radius:.5rem;
+    border:none;
+    background:transparent;
+    color:var(--parchment);
+    cursor:pointer;
+  }
+  .menu button:hover{background:rgba(245,196,81,.18);}
+  .menu button.now{background:rgba(245,196,81,.28);font-weight:900;color:var(--gold);}
+  .menu .part{margin-top:.8rem;font-size:.9rem;letter-spacing:.2em;color:var(--gold);opacity:.7;}
+</style>
+</head>
+<body>
+
+<div class="rail">
+  <span class="rail__room" id="railroom"></span>
+  <span class="rail__keys" id="railkeys"></span>
+</div>
+
+<main class="screen" id="screen"></main>
+
+<div class="bar-ui">
+  <button type="button" data-go="-1">← 上一步</button>
+  <button type="button" data-go="1">下一步 →</button>
+  <button type="button" id="b-menu">跳關 (Esc)</button>
+  <button type="button" id="b-full">全螢幕 (F)</button>
+  <span class="grow" id="barinfo"></span>
+  <span class="net" id="netinfo">連線中…</span>
+</div>
+
+<div class="menu" id="menu" hidden>
+  <h2>跳到哪一關？（Esc 關閉）</h2>
+  <ol id="menulist"></ol>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/qrcode.js"></script>
+<script src="assets/quiz-data.js"></script>
+<script src="assets/cards-data.js"></script>
+<script src="assets/monkeys-data.js"></script>
+<script src="assets/net.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var QUIZ = window.CDVC_QUIZ;
+  var CARDS = window.CDVC_CARDS;
+  var MONKEY = window.CDVC_MONKEYS;
+  var NET = window.CDVC_NET;
+  var QR = window.CDVC_QR;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  /* ============================================================
+     流程：一維陣列，主持人只要一直按右鍵就會走完
+     ============================================================ */
+  var PARTS = {
+    intro: { name: "序章" },
+    q1: { name: "第一關・羅盤", key: "🧭" },
+    q2: { name: "第二關・補給", key: "🍲" },
+    q3: { name: "第三關・傳聲", key: "📣" },
+    q4: { name: "第四關・船員", key: "📸" },
+    end: { name: "終章・啟航" }
+  };
+
+  var S = [];
+  function add(o) { S.push(o); }
+
+  add({ part: "intro", kind: "cover", label: "封面・QR code" });
+  add({ part: "intro", kind: "rules", label: "序章：四把鑰匙" });
+
+  add({ part: "q1", kind: "partTitle", label: "第一關 標題" });
+  QUIZ.QUESTIONS.forEach(function (q, i) {
+    add({ part: "q1", kind: "question", qi: i, sub: "answer", label: "Q" + (i + 1) + "　" + q.q });
+    add({ part: "q1", kind: "question", qi: i, sub: "stats", label: "Q" + (i + 1) + " 統計" });
+  });
+  add({ part: "q1", kind: "map", label: "★ 四象限地圖" });
+  QUIZ.ORDER.forEach(function (k) {
+    add({ part: "q1", kind: "persona", pkey: k, label: "人格　" + QUIZ.TYPES[k].name });
+  });
+  add({ part: "q1", kind: "key", n: 1, label: "🔑 取得羅盤" });
+
+  add({ part: "q2", kind: "partTitle", label: "第二關 標題" });
+  add({ part: "q2", kind: "groups", label: "六大類熱身" });
+  CARDS.MISSIONS.forEach(function (m, i) {
+    add({ part: "q2", kind: "mission", mi: i, sub: "ask", label: m.title });
+    add({ part: "q2", kind: "mission", mi: i, sub: "reveal", label: "└ 公布解答" });
+  });
+  add({ part: "q2", kind: "finalMission", label: "終極任務・配一餐" });
+  add({ part: "q2", kind: "key", n: 2, label: "🔑 取得糧食" });
+
+  add({ part: "q3", kind: "partTitle", label: "第三關 標題" });
+  add({ part: "q3", kind: "monkeyRules", label: "三隻猴子 規則" });
+  add({ part: "q3", kind: "monkeyPlay", label: "★ 三隻猴子 出題" });
+  add({ part: "q3", kind: "key", n: 3, label: "🔑 取得號角" });
+
+  add({ part: "q4", kind: "photo", label: "★ 大合照" });
+  add({ part: "q4", kind: "key", n: 4, label: "🔑 取得船員名冊" });
+
+  add({ part: "end", kind: "finale", label: "終章：四鑰合一" });
+  add({ part: "end", kind: "video", label: "▶ 法船影片" });
+  add({ part: "end", kind: "outro", label: "結束卡" });
+
+  /* ============================================================
+     狀態
+     ============================================================ */
+  var i = 0;                    // 目前畫面
+  var players = {};             // 從連線層來的
+  var timer = { left: 0, total: 0, running: false };
+  var deck = MONKEY.shuffled();
+  var termAt = 0;
+  var photoCount = 0;
+
+  /** 已經走過的關卡拿到幾把鑰匙 */
+  function keysWon() {
+    var won = {};
+    for (var n = 0; n <= i; n++) {
+      if (S[n].kind === "key") { won[S[n].n] = true; }
+    }
+    return won;
+  }
+
+  function roster() {
+    return Object.keys(players).map(function (id) {
+      var p = players[id] || {};
+      return { id: id, name: p.name, answers: p.answers || {} };
+    }).filter(function (p) { return p.name; });
+  }
+
+  function answeredCount(qi) {
+    return roster().filter(function (p) {
+      return p.answers[qi] !== undefined && p.answers[qi] !== null;
+    }).length;
+  }
+
+  /* ============================================================
+     畫面
+     ============================================================ */
+  function render() {
+    var sc = S[i];
+    var el = $("screen");
+    el.className = "screen";
+
+    // 影片離開時要停掉，不然聲音會跟著下一頁
+    var oldVideo = el.querySelector("video");
+    if (oldVideo) { oldVideo.pause(); }
+
+    el.innerHTML = VIEWS[sc.kind] ? VIEWS[sc.kind](sc) : "";
+    if (AFTER[sc.kind]) { AFTER[sc.kind](sc, el); }
+
+    renderRail();
+    renderBar();
+    broadcast();
+  }
+
+  function renderRail() {
+    $("railroom").textContent = "房號 " + NET.room;
+    var won = keysWon();
+    $("railkeys").innerHTML = [1, 2, 3, 4].map(function (n) {
+      var part = ["", "q1", "q2", "q3", "q4"][n];
+      return '<span class="rail__key' + (won[n] ? " on" : "") + '">' + PARTS[part].key + "</span>";
+    }).join("");
+  }
+
+  function renderBar() {
+    var sc = S[i];
+    var extra = "";
+    if (sc.kind === "monkeyPlay") { extra = '　<kbd>→</kbd> 下一題　<kbd>Shift</kbd>+<kbd>→</kbd> 結束這關'; }
+    else if (sc.kind === "mission" && sc.sub === "ask") { extra = '　<kbd>T</kbd> 計時開始/暫停　<kbd>R</kbd> 重設'; }
+    else if (sc.kind === "photo") { extra = '　<kbd>T</kbd> 開始 3・2・1'; }
+
+    $("barinfo").innerHTML =
+      esc(PARTS[sc.part].name) + "　·　" + esc(sc.label) +
+      "　(" + (i + 1) + "/" + S.length + ")" + extra;
+  }
+
+  /* ---------- 各畫面 ---------- */
+  var VIEWS = {};
+  var AFTER = {};
+
+  VIEWS.cover = function () {
+    return '' +
+      '<div class="cover">' +
+        '<div>' +
+          '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社">' +
+          '<p class="eyebrow">台科大崇德志工社 迎新</p>' +
+          '<h1 class="huge">尋寶啟航</h1>' +
+          '<p class="lede">四把鑰匙，藏在四段旅程裡。<br>拿齊了，法船才開得走。</p>' +
+          '<div class="crew">' +
+            '<div class="crew__count"><span id="cnt">0</span> 位夥伴上船了</div>' +
+            '<div class="crew__names" id="names"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cover__qr">' +
+          '<div class="qr" id="qr"></div>' +
+          '<p class="cover__scan">掃我，輸入你的名字</p>' +
+          '<p class="cover__url">' + esc(NET.playUrl()) + '</p>' +
+        '</div>' +
+      '</div>';
+  };
+
+  AFTER.cover = function () {
+    try {
+      $("qr").innerHTML = QR.svg(NET.playUrl(), { dark: "#0B1B2B" });
+    } catch (e) {
+      $("qr").innerHTML = '<p style="color:#333;padding:1rem">QR 產生失敗，請直接念網址</p>';
+    }
+    paintCrew();
+  };
+
+  function paintCrew() {
+    var cnt = $("cnt");
+    if (!cnt) { return; }
+    var list = roster();
+    cnt.textContent = list.length;
+    $("names").innerHTML = list.slice(-48).map(function (p) {
+      return '<span class="chip">' + esc(p.name) + "</span>";
+    }).join("");
+  }
+
+  VIEWS.rules = function () {
+    return '' +
+      '<p class="eyebrow">序章</p>' +
+      '<h1 class="huge">四把鑰匙</h1>' +
+      '<div class="chips" style="margin-top:2rem;font-size:1.4rem">' +
+        '<span class="chip">🧭 羅盤　認識自己</span>' +
+        '<span class="chip">🍲 糧食　餵飽別人</span>' +
+        '<span class="chip">📣 號角　好好說話</span>' +
+        '<span class="chip">📸 名冊　成為夥伴</span>' +
+      '</div>' +
+      '<p class="lede">每過一關拿一把鑰匙。<br>四把湊齊，我們就一起上船。</p>';
+  };
+
+  VIEWS.partTitle = function (sc) {
+    var meta = {
+      q1: ["🧭", "第一關", "羅盤", "先搞清楚自己是哪一種人，<br>才知道要往哪裡走。"],
+      q2: ["🍲", "第二關", "補給倉庫", "伙食團教你的不只是煮飯，<br>是怎麼用食材的特性解決問題。"],
+      q3: ["📣", "第三關", "迷霧傳聲", "看得到的不能說，說得出的看不到。<br>這就是每一次出隊的日常。"]
+    }[sc.part];
+    return '' +
+      '<span class="emoji">' + meta[0] + "</span>" +
+      '<p class="eyebrow">' + meta[1] + "</p>" +
+      '<h1 class="huge">' + meta[2] + "</h1>" +
+      '<p class="lede">' + meta[3] + "</p>";
+  };
+
+  VIEWS.question = function (sc) {
+    var q = QUIZ.QUESTIONS[sc.qi];
+    if (sc.sub === "answer") {
+      var wide = q.opts.length <= 4;
+      return '' +
+        '<div class="q">' +
+          '<p class="q__num">第 ' + (sc.qi + 1) + " 題 / 共 " + QUIZ.QUESTIONS.length + " 題" +
+            (q.multi ? "　·　可複選" : "") + "</p>" +
+          '<h1 class="q__title">' + esc(q.q) + "</h1>" +
+          '<ul class="q__opts' + (wide ? " one" : "") + '">' +
+            q.opts.map(function (o, n) {
+              return '<li class="q__opt"><span class="q__key">' + KEYS.charAt(n) + "</span>" +
+                     "<span>" + esc(o.t) + "</span></li>";
+            }).join("") +
+          "</ul>" +
+          '<p class="q__done">已作答 <b id="ans">0</b> <span class="quiet">/ <span id="tot">0</span> 人</span></p>' +
+        "</div>";
+    }
+
+    // 統計
+    var list = roster();
+    var counts = q.opts.map(function () { return 0; });
+    list.forEach(function (p) {
+      QUIZ.asList(p.answers[sc.qi]).forEach(function (ci) {
+        if (counts[ci] !== undefined) { counts[ci]++; }
+      });
+    });
+    var max = Math.max.apply(null, counts.concat([1]));
+
+    return '' +
+      '<p class="eyebrow">第 ' + (sc.qi + 1) + " 題　大家怎麼選</p>" +
+      '<h2 class="mid" style="margin-bottom:1.5rem">' + esc(q.q) + "</h2>" +
+      '<ul class="bars">' +
+        q.opts.map(function (o, n) {
+          var pct = Math.round(counts[n] / max * 100);
+          return '<li class="bar">' +
+            '<span class="bar__key">' + KEYS.charAt(n) + "</span>" +
+            '<span class="bar__track"><span class="bar__fill" data-w="' + pct + '"></span>' +
+              '<span class="bar__label"><span>' + esc(o.t) + "</span></span></span>" +
+            '<span class="bar__n">' + counts[n] + "</span>" +
+          "</li>";
+        }).join("") +
+      "</ul>";
+  };
+
+  AFTER.question = function (sc, el) {
+    if (sc.sub === "answer") { paintAnswered(sc.qi); return; }
+    // 長條要在下一個影格才長出來，動畫才看得到
+    requestAnimationFrame(function () {
+      Array.prototype.forEach.call(el.querySelectorAll(".bar__fill"), function (f) {
+        f.style.width = f.getAttribute("data-w") + "%";
+      });
+    });
+  };
+
+  function paintAnswered(qi) {
+    var a = $("ans"), t = $("tot");
+    if (!a) { return; }
+    a.textContent = answeredCount(qi);
+    t.textContent = roster().length;
+  }
+
+  /* ---------- 四象限地圖 ---------- */
+  VIEWS.map = function () {
+    var qs = QUIZ.QUADRANTS.map(function (q) {
+      return '<div class="map__q ' + q.at + '"><b>' + esc(q.title) + "</b><i>" + esc(q.sub) + "</i></div>";
+    }).join("");
+
+    return '' +
+      '<p class="eyebrow">你們的羅盤，長這樣</p>' +
+      '<div class="map" id="map">' +
+        '<div class="map__grid"></div>' +
+        '<div class="map__axis h"></div><div class="map__axis v"></div>' +
+        qs +
+        '<span class="map__ax up">對人</span>' +
+        '<span class="map__ax down">對事・對環境</span>' +
+        '<span class="map__ax left">內斂</span>' +
+        '<span class="map__ax right">外向</span>' +
+      "</div>" +
+      '<div class="legend">' +
+        QUIZ.ORDER.map(function (k) {
+          var t = QUIZ.TYPES[k];
+          return '<i style="color:' + t.color + '">' + t.emoji + " " + esc(t.name) + "</i>";
+        }).join("") +
+      "</div>";
+  };
+
+  AFTER.map = function (sc, el) {
+    var box = el.querySelector("#map");
+    var pts = roster().map(function (p) {
+      var pos = QUIZ.position(p.answers);
+      if (!pos) { return null; }
+      return { name: p.name, type: QUIZ.typeOf(p.answers), x: pos.x, y: pos.y };
+    }).filter(Boolean);
+
+    if (!pts.length) {
+      box.insertAdjacentHTML("beforeend",
+        '<p class="quiet" style="position:absolute;inset:auto 0 45% 0;font-size:1.4rem">還沒有人作答</p>');
+      return;
+    }
+
+    // 用格子搶位子，保證名字不會疊在一起
+    var cols = 22, rows = 13;
+    var taken = {};
+    function free(c, r) {
+      return c >= 0 && r >= 0 && c < cols && r < rows && !taken[c + "," + r];
+    }
+
+    pts.forEach(function (p, n) {
+      var c0 = Math.round((p.x + 1) / 2 * (cols - 1));
+      var r0 = Math.round((1 - p.y) / 2 * (rows - 1));
+      var c = c0, r = r0, found = free(c0, r0);
+
+      for (var rad = 1; !found && rad < Math.max(cols, rows); rad++) {
+        for (var dr = -rad; dr <= rad && !found; dr++) {
+          for (var dc = -rad; dc <= rad && !found; dc++) {
+            if (Math.max(Math.abs(dr), Math.abs(dc)) !== rad) { continue; }
+            if (free(c0 + dc, r0 + dr)) { c = c0 + dc; r = r0 + dr; found = true; }
+          }
+        }
+      }
+      if (!found) { return; }
+      taken[c + "," + r] = true;
+
+      var t = QUIZ.TYPES[p.type];
+      var left = (c + 0.5) / cols * 100;
+      var top = (r + 0.5) / rows * 100;
+      box.insertAdjacentHTML("beforeend",
+        '<span class="dot" style="left:' + left.toFixed(2) + "%;top:" + top.toFixed(2) +
+        "%;color:" + t.color + ";animation-delay:" + (n * 0.045).toFixed(2) + 's">' +
+        t.emoji + "<span>" + esc(p.name) + "</span></span>");
+    });
+  };
+
+  VIEWS.persona = function (sc) {
+    var t = QUIZ.TYPES[sc.pkey];
+    var mine = roster().filter(function (p) {
+      return Object.keys(p.answers).length && QUIZ.typeOf(p.answers) === sc.pkey;
+    });
+
+    return '' +
+      '<span class="emoji">' + t.emoji + "</span>" +
+      '<h1 class="huge" style="background:linear-gradient(180deg,#fff,' + t.color + ');' +
+        '-webkit-background-clip:text;background-clip:text;color:transparent">' + esc(t.name) + "</h1>" +
+      '<p class="eyebrow" style="margin-top:.4rem">' + esc(t.en) + "</p>" +
+      '<p class="big" style="margin-top:1.2rem;color:' + t.color + '">' + esc(t.tagline) + "</p>" +
+      '<p class="lede">' + esc(t.desc) + "</p>" +
+      '<div class="chips" style="margin-top:1.2rem">' +
+        t.traits.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") +
+      "</div>" +
+      (mine.length
+        ? '<p class="eyebrow" style="margin-top:1.8rem">這一區的有你們 ' + mine.length + " 位</p>" +
+          '<div class="chips">' + mine.map(function (p) {
+            return '<span class="chip" style="border-color:' + t.color + '">' + esc(p.name) + "</span>";
+          }).join("") + "</div>"
+        : "");
+  };
+
+  VIEWS.key = function (sc) {
+    var meta = {
+      1: ["🧭", "羅盤", "你知道自己是哪一種人了。<br>接下來，看看你能為別人做什麼。"],
+      2: ["🍲", "糧食", "在伙食團，我們不只是把飯煮熟。<br>我們學會看懂每一種食材，然後把它用在對的人身上。"],
+      3: ["📣", "號角", "說得清楚、聽得進去、願意等對方，<br>服務的現場靠的就是這個。"],
+      4: ["📸", "船員名冊", "名字都記下來了。<br>從今天起，你是這艘船上的人。"]
+    }[sc.n];
+
+    return '' +
+      '<p class="eyebrow">第 ' + sc.n + " 把鑰匙　到手</p>" +
+      '<span class="emoji" style="font-size:9rem">' + meta[0] + "</span>" +
+      '<h1 class="huge">' + esc(meta[1]) + "</h1>" +
+      '<p class="lede">' + meta[2] + "</p>";
+  };
+
+  /* ---------- 第二關 ---------- */
+  VIEWS.groups = function () {
+    return '' +
+      '<p class="eyebrow">熱身　先看看你手上是什麼顏色</p>' +
+      '<h1 class="big" style="margin-bottom:1.4rem">六大類食物，站到你的那一區</h1>' +
+      '<div class="groups">' +
+        CARDS.GROUP_ORDER.map(function (k) {
+          var g = CARDS.GROUPS[k];
+          return '<div class="group" style="background:rgba(246,231,198,.06)">' +
+            '<div class="group__name" style="background:' + g.color + ";color:" + g.ink + '">' +
+              esc(g.name) + "</div>" +
+            '<div class="group__desc">' + esc(g.desc) + "</div>" +
+          "</div>";
+        }).join("") +
+      "</div>";
+  };
+
+  VIEWS.mission = function (sc) {
+    var m = CARDS.MISSIONS[sc.mi];
+
+    if (sc.sub === "ask") {
+      return '' +
+        '<div class="mission">' +
+          '<span class="mission__icon">' + m.icon + "</span>" +
+          '<p class="eyebrow">' + esc(m.title) + "</p>" +
+          '<p class="mission__say">' + esc(m.situation) + "</p>" +
+          '<p class="lede" style="font-weight:800;color:var(--gold)">' + esc(m.hint) +
+            '<br><span class="quiet" style="font-size:1.2rem">手上的卡片有解的，站起來舉高</span></p>' +
+          '<div class="timer" id="clock">--:--<small>討論時間</small></div>' +
+        "</div>";
+    }
+
+    return '' +
+      '<p class="eyebrow">' + esc(m.title) + "　·　參考解答</p>" +
+      '<h1 class="big" style="color:var(--gold)">' + esc(m.key) + "</h1>" +
+      '<div class="foods">' +
+        m.answers.map(function (name, n) {
+          var c = CARDS.card(name);
+          var g = CARDS.GROUPS[c.group];
+          return '<span class="food" style="background:' + g.color + ";color:" + g.ink +
+                 ";animation-delay:" + (n * 0.07).toFixed(2) + 's">' + esc(name) + "</span>";
+        }).join("") +
+      "</div>" +
+      '<p class="why">' + esc(m.why) + "</p>" +
+      '<div class="effects">' +
+        m.answers.map(function (name) {
+          var c = CARDS.card(name);
+          return "<div><b>" + esc(name) + "</b>　" + esc(c.effect) + "</div>";
+        }).join("") +
+      "</div>";
+  };
+
+  AFTER.mission = function (sc) {
+    if (sc.sub !== "ask") { return; }
+    startTimer(90);
+  };
+
+  VIEWS.finalMission = function () {
+    return '' +
+      '<span class="emoji">🍱</span>' +
+      '<p class="eyebrow">終極任務</p>' +
+      '<h1 class="big">幫這位學長配一餐</h1>' +
+      '<p class="mission__say" style="font-size:2.1rem">' +
+        "「熬夜、便祕、想減重、明天還要早起去淨灘。」" +
+      "</p>" +
+      '<p class="lede">全場一起出牌，<b style="color:var(--gold)">六大類至少湊到四類</b>，<br>' +
+        "每個上場的人要說出：我這張卡負責解決哪一件事。</p>" +
+      '<p class="lede quiet" style="font-size:1.3rem">' +
+        "順帶一提——<b>白米、豆腐、豆漿</b>這三張卡上面什麼功效都沒寫。<br>" +
+        "它們不是萬靈丹，卻是伙食團每一餐的底。<br>" +
+        "有些付出就是這樣，不會被寫在卡片上，但少了就不成一餐。</p>";
+  };
+
+  /* ---------- 第三關 ---------- */
+  VIEWS.monkeyRules = function () {
+    return '' +
+      '<h1 class="big">三隻猴子</h1>' +
+      '<p class="lede">三個人一組，站成一直線。題目只有比劃猴看得到。</p>' +
+      '<div class="roles">' +
+        MONKEY.ROLES.map(function (r) {
+          return '<div class="role"><div class="role__e">' + r.emoji + "</div>" +
+            '<div class="role__n">' + esc(r.name) + "</div>" +
+            '<div class="role__r">' + esc(r.rule) + "</div></div>";
+        }).join("") +
+      "</div>" +
+      '<p class="lede quiet" style="font-size:1.3rem">' +
+        "比劃猴面對投影幕，傳話猴和猜題猴背對投影幕。<br>其他人可以看，但不准出聲提示。</p>";
+  };
+
+  VIEWS.monkeyPlay = function () {
+    var t = deck[termAt % deck.length];
+    return '' +
+      '<p class="term__n">第 ' + (termAt + 1) + " 題　/　題庫共 " + deck.length + " 題</p>" +
+      '<div class="term">' + esc(t.t) + "</div>" +
+      '<p class="lede quiet" style="margin-top:2rem">🙊 比劃猴：只能比，不能說　·　🙉 傳話猴：只能說　·　🙈 猜題猴：閉眼</p>';
+  };
+
+  VIEWS.photo = function () {
+    if (photoCount > 0) {
+      return '<div class="count3">' + (photoCount === 4 ? "📸" : photoCount) + "</div>";
+    }
+    return '' +
+      '<span class="emoji">📸</span>' +
+      '<h1 class="huge">全體船員集合</h1>' +
+      '<p class="lede">往中間靠，後排站高一點，<br>手上的食材卡舉起來。</p>' +
+      '<p class="big" style="margin-top:1.5rem;color:var(--gold)">口號：崇德——志工！</p>' +
+      '<p class="quiet" style="margin-top:1rem;font-size:1.2rem">主持人按 <kbd>T</kbd> 開始 3・2・1</p>';
+  };
+
+  VIEWS.finale = function () {
+    return '' +
+      '<div class="chips" style="font-size:3rem;gap:1.5rem;margin-bottom:1.5rem">' +
+        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">🧭</span>' +
+        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">🍲</span>' +
+        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">📣</span>' +
+        '<span class="rail__key on" style="width:6rem;height:6rem;font-size:3rem">📸</span>' +
+      "</div>" +
+      '<h1 class="huge">四把鑰匙，湊齊了</h1>' +
+      '<p class="lede">寶藏從來不在箱子裡。<br>是這一整船的人。</p>' +
+      '<p class="eyebrow" style="margin-top:2rem">按 → 啟航</p>';
+  };
+
+  VIEWS.video = function () {
+    return '<div class="video"><video src="media/ship_moving.mp4" controls playsinline></video></div>';
+  };
+
+  AFTER.video = function (sc, el) {
+    var v = el.querySelector("video");
+    v.play()["catch"](function () { /* 瀏覽器擋掉就讓主持人自己按 */ });
+  };
+
+  VIEWS.outro = function () {
+    return '' +
+      '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社" style="width:9rem">' +
+      '<h1 class="huge">歡迎上船</h1>' +
+      '<p class="lede">每週三 18:30，伙食團等你來開伙。</p>' +
+      '<div class="qr" id="qr2" style="width:16rem;margin:1.5rem auto 0"></div>' +
+      '<p class="eyebrow" style="margin-top:.8rem">追蹤我們</p>';
+  };
+
+  AFTER.outro = function () {
+    var url = (window.CDVC_CONFIG || {}).socialUrl;
+    if (!url) { return; }
+    try { $("qr2").innerHTML = QR.svg(url, { dark: "#0B1B2B" }); } catch (e) { /* 忽略 */ }
+  };
+
+  /* ============================================================
+     計時器
+     ============================================================ */
+  function startTimer(sec) {
+    timer.total = sec;
+    timer.left = sec;
+    timer.running = true;
+    paintTimer();
+  }
+
+  function paintTimer() {
+    var el = $("clock");
+    if (!el) { return; }
+    var m = Math.floor(timer.left / 60), s = timer.left % 60;
+    el.className = "timer" + (timer.left === 0 ? " zero" : (timer.left <= 15 ? " low" : ""));
+    el.innerHTML = m + ":" + (s < 10 ? "0" : "") + s +
+      "<small>" + (timer.left === 0 ? "時間到" : (timer.running ? "討論時間" : "暫停中")) + "</small>";
+  }
+
+  setInterval(function () {
+    if (!timer.running || timer.left <= 0) { return; }
+    timer.left--;
+    if (timer.left === 0) { timer.running = false; }
+    paintTimer();
+  }, 1000);
+
+  /* ============================================================
+     操作
+     ============================================================ */
+  function go(delta) {
+    var next = i + delta;
+    if (next < 0 || next >= S.length) { return; }
+    i = next;
+    render();
+  }
+
+  function jump(n) {
+    i = Math.max(0, Math.min(S.length - 1, n));
+    render();
+  }
+
+  function broadcast() {
+    var sc = S[i];
+    NET.setState({
+      i: i,
+      part: sc.part,
+      kind: sc.kind,
+      label: sc.label,
+      qi: sc.qi === undefined ? null : sc.qi,
+      sub: sc.sub || null,
+      mi: sc.mi === undefined ? null : sc.mi,
+      pkey: sc.pkey || null,
+      term: sc.kind === "monkeyPlay" ? deck[termAt % deck.length].t : null,
+      total: S.length
+    });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    var sc = S[i];
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      toggleMenu();
+      return;
+    }
+    if (!$("menu").hidden) { return; }
+
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown" || e.key === "Enter") {
+      e.preventDefault();
+      // 三隻猴子停在同一頁換題，Shift 才離開
+      if (sc.kind === "monkeyPlay" && !e.shiftKey) {
+        termAt++;
+        render();
+        return;
+      }
+      go(1);
+      return;
+    }
+
+    if (e.key === "ArrowLeft" || e.key === "PageUp") {
+      e.preventDefault();
+      if (sc.kind === "monkeyPlay" && !e.shiftKey && termAt > 0) {
+        termAt--;
+        render();
+        return;
+      }
+      go(-1);
+      return;
+    }
+
+    var k = e.key.toLowerCase();
+
+    if (k === "f") { toggleFull(); return; }
+
+    if (k === "t") {
+      if (sc.kind === "photo") { runPhotoCountdown(); return; }
+      if (timer.left > 0) { timer.running = !timer.running; paintTimer(); }
+      else if (sc.kind === "mission" && sc.sub === "ask") { startTimer(90); }
+      return;
+    }
+
+    if (k === "r") {
+      if (sc.kind === "mission" && sc.sub === "ask") { startTimer(90); }
+      if (sc.kind === "monkeyPlay") { deck = MONKEY.shuffled(); termAt = 0; render(); }
+      if (sc.kind === "photo") { photoCount = 0; render(); }
+      return;
+    }
+  });
+
+  function runPhotoCountdown() {
+    if (photoCount) { return; }
+    var seq = [3, 2, 1, 4];   // 4 是快門那一格
+    var at = 0;
+    (function step() {
+      photoCount = seq[at];
+      render();
+      at++;
+      if (at < seq.length) { setTimeout(step, 1000); }
+      else { setTimeout(function () { photoCount = 0; render(); }, 2500); }
+    })();
+  }
+
+  function toggleFull() {
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else { document.documentElement.requestFullscreen()["catch"](function () {}); }
+  }
+
+  function toggleMenu() {
+    var m = $("menu");
+    if (m.hidden) { buildMenu(); m.hidden = false; }
+    else { m.hidden = true; }
+  }
+
+  function buildMenu() {
+    var lastPart = "";
+    $("menulist").innerHTML = S.map(function (sc, n) {
+      var head = "";
+      if (sc.part !== lastPart) {
+        lastPart = sc.part;
+        head = '<li class="part">' + esc(PARTS[sc.part].name) + "</li>";
+      }
+      return head + '<li><button type="button" data-jump="' + n + '"' +
+        (n === i ? ' class="now"' : "") + ">" + (n + 1) + ". " + esc(sc.label) + "</button></li>";
+    }).join("");
+  }
+
+  $("menu").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-jump]");
+    if (!b) { return; }
+    $("menu").hidden = true;
+    jump(Number(b.getAttribute("data-jump")));
+  });
+
+  document.querySelector(".bar-ui").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) { return; }
+    if (b.hasAttribute("data-go")) { go(Number(b.getAttribute("data-go"))); }
+    if (b.id === "b-menu") { toggleMenu(); }
+    if (b.id === "b-full") { toggleFull(); }
+  });
+
+  /* 滑鼠不動就把控制列收起來，投影幕上乾淨一點 */
+  var hideAt = null;
+  function poke() {
+    document.body.classList.add("show-ui");
+    clearTimeout(hideAt);
+    hideAt = setTimeout(function () {
+      document.body.classList.remove("show-ui");
+    }, 3000);
+  }
+  document.addEventListener("mousemove", poke);
+  poke();
+
+  /* ============================================================
+     連線
+     ============================================================ */
+  NET.onStatus = function (ok) {
+    var el = $("netinfo");
+    el.className = "net " + (ok ? "on" : "off");
+    el.textContent = ok ? "● 已連線" : "● 連線中斷，檢查網路";
+  };
+
+  NET.init("stage").then(function (r) {
+    var el = $("netinfo");
+    if (r.mode === "firebase") {
+      el.className = "net off";
+      el.textContent = "● 連線中…";
+    } else {
+      el.className = "net off";
+      el.textContent = "● 本機模式（手機連不上，鍵盤照常可用）";
+    }
+    broadcast();
+  });
+
+  NET.onPlayers(function (p) {
+    players = p || {};
+    var sc = S[i];
+    // 只重畫會變的部分，不要整頁重刷，不然動畫會一直重跑
+    if (sc.kind === "cover") { paintCrew(); }
+    else if (sc.kind === "question" && sc.sub === "answer") { paintAnswered(sc.qi); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
