@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>尋寶啟航｜投影幕 - 台科大崇德志工社迎新</title>
+<title>尋寶啟航｜投影幕 - 台科大天心伙食團 迎新</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="assets/logo1.webp">
 <link rel="stylesheet" href="assets/theme.css">
@@ -72,6 +72,7 @@
   }
   .rail__keys{display:flex;gap:.55rem;margin-left:auto;}
   .rail__key{
+    line-height:1.3;
     width:2.7rem;height:2.7rem;
     display:grid;place-items:center;
     border-radius:50%;
@@ -133,7 +134,9 @@
   }
   .lede b{color:var(--flame);}
   .quiet{color:var(--ink-2);opacity:.8;}
-  .emoji{display:block;font-size:6rem;line-height:1.1;
+  /* emoji 的字身比一般文字高，行高給 1.1 會讓它的頭超出行框壓到上一行，
+     所以這裡一律留寬一點 */
+  .emoji{display:block;font-size:6rem;line-height:1.35;
     filter:drop-shadow(0 .3rem .5rem rgba(90,52,18,.22));}
 
   .chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
@@ -159,7 +162,7 @@
     border:.14rem solid rgba(122,85,38,.2);
     box-shadow:0 .28rem 0 rgba(90,52,18,.12);
   }
-  .beat b{display:block;font-size:2.6rem;line-height:1.1;}
+  .beat b{display:block;font-size:2.6rem;line-height:1.3;}
   .beat span{margin-top:.35rem;font-size:1.35rem;font-weight:900;}
   .beat i{font-style:normal;font-size:.95rem;color:var(--ink-2);letter-spacing:.16em;}
   .beat__arrow{align-self:center;font-size:2rem;color:var(--flame);opacity:.65;}
@@ -335,7 +338,7 @@
 
   /* ---------- 任務 ---------- */
   .mission{width:100%;max-width:80rem;}
-  .mission__icon{font-size:5rem;line-height:1;filter:drop-shadow(0 .3rem .5rem rgba(90,52,18,.22));}
+  .mission__icon{display:block;font-size:5rem;line-height:1.3;filter:drop-shadow(0 .3rem .5rem rgba(90,52,18,.22));}
   .mission__say{
     margin:1rem auto 0;
     max-width:56rem;
@@ -403,7 +406,7 @@
     background:#fff;border:.14rem solid rgba(122,85,38,.2);
     box-shadow:0 .3rem 0 rgba(90,52,18,.12);
   }
-  .role__e{font-size:4rem;line-height:1;}
+  .role__e{font-size:4rem;line-height:1.3;}
   .role__n{font-size:1.9rem;font-weight:900;margin:.4rem 0 .5rem;color:var(--flame);}
   .role__r{font-size:1.25rem;line-height:1.55;color:var(--ink-2);}
 
@@ -419,9 +422,69 @@
   }
   .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--ink-2);opacity:.8;font-weight:800;}
 
+  /* ---------- 引言 ---------- */
+  .quote{
+    margin:1.4rem auto 0;
+    max-width:56rem;
+    padding:1.8rem 2.4rem;
+    border-left:.4rem solid var(--flame);
+    border-radius:.3rem 1.2rem 1.2rem .3rem;
+    background:#fff;
+    box-shadow:0 .35rem 0 rgba(90,52,18,.12);
+    font-size:2.15rem;
+    font-weight:800;
+    line-height:1.75;
+    text-align:left;
+    color:var(--ink);
+  }
+  .quote b{color:var(--flame);}
+  .quote cite{
+    display:block;
+    margin-top:.9rem;
+    font-style:normal;
+    font-size:1.4rem;
+    font-weight:900;
+    text-align:right;
+    color:var(--ink-2);
+  }
+  .quote cite::before{content:"—— ";}
+
+  /* ---------- 照片牆 ---------- */
+  .wall{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:1fr;
+    grid-auto-flow:dense;
+    gap:.9rem;
+    width:100%;
+    max-width:88rem;
+    height:62vh;
+    margin-top:1rem;
+  }
+  .wall figure{
+    margin:0;
+    overflow:hidden;
+    border:.3rem solid #fff;
+    border-radius:.4rem;
+    box-shadow:0 .3rem .8rem rgba(90,52,18,.28);
+    background:var(--paper-2);
+  }
+  .wall figure:nth-child(odd){transform:rotate(-.7deg);}
+  .wall figure:nth-child(even){transform:rotate(.7deg);}
+  /* 直式照片給它兩列高，不然 object-fit 會把人臉裁掉 */
+  .wall .big{grid-column:span 2;grid-row:span 2;transform:rotate(0);}
+  .wall .tall{grid-row:span 2;}
+  .wall .wide{grid-column:span 2;}
+  .wall img{width:100%;height:100%;object-fit:cover;display:block;}
+  .wall--empty{
+    display:block;height:auto;
+    padding:2rem;text-align:center;
+    font-size:1.4rem;color:var(--ink-2);
+  }
+
   /* ---------- 大合照 ---------- */
   .count3{
-    font-size:16rem;font-weight:900;line-height:1;
+    font-size:16rem;font-weight:900;line-height:1.2;
     background:linear-gradient(150deg,#F2A72C,#E2621C 50%,#C4453B);
     -webkit-background-clip:text;background-clip:text;color:transparent;
     animation:pop .4s ease-out;
@@ -545,6 +608,7 @@
 <script src="assets/quiz-data.js"></script>
 <script src="assets/cards-data.js"></script>
 <script src="assets/monkeys-data.js"></script>
+<script src="assets/photos-data.js"></script>
 <script src="assets/net.js"></script>
 <script>
 (function () {
@@ -608,6 +672,7 @@
   add({ part: "q3", kind: "monkeyRules", label: "三隻猴子 規則" });
   add({ part: "q3", kind: "monkeyPlay", label: "★ 三隻猴子 出題" });
   add({ part: "q3", kind: "key", n: 3, label: "🤝 第三段旅程完成" });
+  add({ part: "q3", kind: "photos", label: "★ 志工照片牆" });
 
   add({ part: "q4", kind: "partTitle", label: "第四關 標題・開箱" });
   add({ part: "q4", kind: "photo", label: "★ 大合照" });
@@ -700,9 +765,9 @@
       '<div class="cover">' +
         '<div>' +
           '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社">' +
-          '<p class="eyebrow">台科大崇德志工社 迎新</p>' +
+          '<p class="eyebrow">台科大天心伙食團 迎新</p>' +
           '<h1 class="huge">尋寶啟航</h1>' +
-          '<p class="lede">傳說島上藏著一箱寶藏。<br>四段旅程走完，你就會知道它在哪裡。</p>' +
+          '<p class="lede">傳說島上藏著一個寶藏。<br>讓我們踏上冒險一起尋找它吧！</p>' +
           '<div class="crew">' +
             '<div class="crew__count"><span id="cnt">0</span> 位夥伴上船了</div>' +
             '<div class="crew__names" id="names"></div>' +
@@ -710,7 +775,7 @@
         '</div>' +
         '<div class="cover__qr">' +
           '<div class="qr" id="qr"></div>' +
-          '<p class="cover__scan">掃我，輸入你的名字</p>' +
+          '<p class="cover__scan">SCAN ME</p>' +
           '<p class="cover__url">' + esc(NET.playUrl()) + '</p>' +
         '</div>' +
       '</div>';
@@ -754,7 +819,7 @@
             "<i>" + esc(b[2]) + "</i></div>";
         }).join("") +
       "</div>" +
-      '<p class="lede">走完四段，箱子就會打開。<br>先說好——<b>裡面的東西可能不是你想的那樣</b>。</p>';
+      '<p class="lede">經歷這四場蛻變，你將獲得打開寶箱的<b>鑰匙</b>。</p>';
   };
 
   VIEWS.partTitle = function (sc) {
@@ -762,11 +827,11 @@
       q1: ["🧭", "第一段旅程", "認識自己",
            "藏寶圖的第一條線索，是你自己。<br>知道你是誰，才知道要往哪裡走。"],
       q2: ["🍲", "第二段旅程", "找到同伴",
-           "伙食團不只是煮飯，<br>是用一道料理去<b>感動另一個人</b>。<br>而願意一起煮的那些人，就是同伴。"],
+           "一人在外不知道怎麼吃才會營養？<br>走進伙食團，就有熱騰騰的飯菜，<br>還有陪你一起成長的夥伴！"],
       q3: ["🤝", "第三段旅程", "實踐服務",
            "知道自己是誰、身邊有誰之後，剩下的就是真的去做。<br>看得到的不能說，說得出的看不到——這就是服務現場。"],
       q4: ["💎", "終　　點", "開箱",
-           "四段旅程走完了。<br>把箱子打開之前，先站在一起。"]
+           "四段旅程走完了。<br>把箱子打開之前，讓我們．．．"]
     }[sc.part];
     return '' +
       '<span class="emoji">' + meta[0] + "</span>" +
@@ -845,15 +910,15 @@
     }).join("");
 
     return '' +
-      '<p class="eyebrow">你們的羅盤，長這樣</p>' +
+      '<p class="eyebrow">大家的羅盤</p>' +
       '<div class="map" id="map">' +
         '<div class="map__grid"></div>' +
         '<div class="map__axis h"></div><div class="map__axis v"></div>' +
         qs +
-        '<span class="map__ax up">對人</span>' +
-        '<span class="map__ax down">對事・對環境</span>' +
-        '<span class="map__ax left">內斂</span>' +
-        '<span class="map__ax right">外向</span>' +
+        '<span class="map__ax up">人際導向</span>' +
+        '<span class="map__ax down">任務導向</span>' +
+        '<span class="map__ax left">被動內向</span>' +
+        '<span class="map__ax right">主動外向</span>' +
       "</div>" +
       '<div class="legend">' +
         QUIZ.ORDER.map(function (k) {
@@ -978,7 +1043,7 @@
         t.traits.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join("") +
       "</div>" +
       (mine.length
-        ? '<p class="eyebrow" style="margin-top:1.8rem">這一區的有你們 ' + mine.length + " 位</p>" +
+        ? '<p class="eyebrow" style="margin-top:1.8rem">你們當中有 ' + mine.length + " 位</p>" +
           '<div class="chips">' + mine.map(function (p) {
             return '<span class="chip" style="border-color:' + t.color + '">' + esc(p.name) + "</span>";
           }).join("") + "</div>"
@@ -987,15 +1052,16 @@
 
   VIEWS.key = function (sc) {
     var meta = {
-      1: ["🧭", "認識自己　✓",
+      1: ["🧭", "認識自己 ✓",
           "你知道自己是哪一種人了。<br>但一個人拿著羅盤，還走不到寶藏。<br><b>接下來要找的是同伴。</b>"],
-      2: ["🍲", "找到同伴　✓",
-          "在伙食團，我們不只是把飯煮熟。<br>是想著今天誰累了、誰感冒了，<br><b>然後用一道菜讓他覺得被在乎</b>。<br>會為別人多想這一步的人，你剛剛都認識了。"],
-      3: ["🤝", "實踐服務　✓",
-          "說得清楚、聽得進去、願意等對方。<br>這就是我們每一次出隊在做的事。<br><b>服務不是誰特別厲害，是三個人一起才成立。</b>"],
+      2: ["🍲", "找到同伴 ✓",
+          "伙食團不只是煮飯，<br>是用一道料理去<b>感動另一個人</b>。<br>伙食團是你北漂的第二個家。"],
+      3: ["🤝", "實踐服務 ✓", ""],
       4: ["💎", "箱子打開了",
           "裡面沒有金幣。<br>只有剛剛那張照片。"]
     }[sc.n];
+
+    if (sc.n === 3) { return keyThree(meta); }
 
     return '' +
       '<p class="eyebrow">第 ' + sc.n + " 段旅程</p>" +
@@ -1003,6 +1069,19 @@
       '<h1 class="huge">' + esc(meta[1]) + "</h1>" +
       '<p class="lede">' + meta[2] + "</p>";
   };
+
+  /* 第三段的收尾是一段引言，版面跟其他關不一樣 */
+  function keyThree(meta) {
+    return '' +
+      '<p class="eyebrow">第 3 段旅程</p>' +
+      '<span class="emoji" style="font-size:5.5rem">' + meta[0] + "</span>" +
+      '<h1 class="big" style="color:var(--flame)">' + esc(meta[1]) + "</h1>" +
+      '<blockquote class="quote">' +
+        "一個成就千古、萬古美名的人，絕對不是只有自私自利，為自己著想而已；" +
+        "唯有<b>為眾生付出，為眾生服務</b>，才能夠千年甚至萬年被傳頌。" +
+        '<cite>仲由夫子</cite>' +
+      "</blockquote>";
+  }
 
   /* ---------- 第二關 ---------- */
   VIEWS.groups = function () {
@@ -1031,7 +1110,7 @@
           '<p class="eyebrow">' + esc(m.title) + "</p>" +
           '<p class="mission__say">' + esc(m.situation) + "</p>" +
           '<p class="lede" style="font-weight:900"><b>' + esc(m.hint) + "</b>" +
-            '<br><span class="quiet" style="font-size:1.2rem">手上的卡片有解的，站起來舉高</span></p>' +
+            '<br><span class="quiet" style="font-size:1.2rem">手上的卡片有解的舉高</span></p>' +
           '<div class="timer" id="clock">--:--<small>討論時間</small></div>' +
         "</div>";
     }
@@ -1098,7 +1177,40 @@
     return '' +
       '<p class="term__n">第 ' + (termAt + 1) + " 題　/　題庫共 " + deck.length + " 題</p>" +
       '<div class="term">' + esc(t.t) + "</div>" +
-      '<p class="lede quiet" style="margin-top:2rem">🙊 比劃猴：只能比，不能說　·　🙉 傳話猴：只能說　·　🙈 猜題猴：閉眼</p>';
+      '<p class="lede quiet" style="margin-top:2rem">🙊 比劃猴：只能比，不能說 · 🙉 傳話猴：只能說 · 🙈 猜題猴：閉眼</p>';
+  };
+
+  VIEWS.photos = function () {
+    var list = window.CDVC_PHOTOS || [];
+    if (!list.length) {
+      return '<p class="lede wall--empty">還沒有放照片。把檔案放進 media/photos/，' +
+             '再到 assets/photos-data.js 補上清單。</p>';
+    }
+    return '' +
+      '<p class="eyebrow">這些，都是我們真的做過的事</p>' +
+      '<h1 class="big">為眾生服務，長這個樣子</h1>' +
+      '<div class="wall" id="wall">' +
+        list.map(function (ph) {
+          return '<figure class="' + esc(ph.span || "") + '">' +
+                 "<img src=\"" + esc(ph.src) + "\" alt=\"" + esc(ph.alt || "") + "\"></figure>";
+        }).join("") +
+      "</div>";
+  };
+
+  AFTER.photos = function (sc, el) {
+    var wall = el.querySelector("#wall");
+    if (!wall) { return; }
+    // 檔案還沒放進去的話就把那一格收掉，不要留一個破圖
+    Array.prototype.forEach.call(wall.querySelectorAll("img"), function (img) {
+      img.addEventListener("error", function () {
+        var fig = img.parentNode;
+        if (fig && fig.parentNode) { fig.parentNode.removeChild(fig); }
+        if (!wall.children.length) {
+          wall.className = "wall wall--empty";
+          wall.textContent = "照片還沒放進 media/photos/";
+        }
+      });
+    });
   };
 
   VIEWS.photo = function () {

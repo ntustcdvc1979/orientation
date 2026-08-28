@@ -74,10 +74,10 @@
 
   /* 四個象限的名字。key 是 [x正負][y正負] */
   var QUADRANTS = [
-    { at: "tr", title: "點火的人",   sub: "你一到場，氣氛就亮了", color: "#D6470F" },
-    { at: "tl", title: "接住人的人", sub: "有你在，大家都很安心", color: "#0E8C8F" },
-    { at: "bl", title: "撐住事的人", sub: "沒有你，這件事就散了", color: "#5F8F12" },
-    { at: "br", title: "往前衝的人", sub: "你先動，大家就跟上",   color: "#7C4BB0" }
+    { at: "tr", title: "影響型(I)孔雀",   sub: "熱情、激發團隊、活力", color: "#D6470F" },
+    { at: "tl", title: "穩定型(S)無尾熊", sub: "包容、傾聽、提供安全感", color: "#0E8C8F" },
+    { at: "bl", title: "分析型(C)貓頭鷹", sub: "嚴謹、細節、守護品質與流程", color: "#5F8F12" },
+    { at: "br", title: "支配型(D)獅子", sub: "果斷、目標導向、帶頭衝刺",   color: "#7C4BB0" }
   ];
 
   var QUESTIONS = [
