@@ -423,6 +423,29 @@
     filter:drop-shadow(0 .12rem 0 rgba(255,255,255,.85));
     animation:pop .35s ease-out;
   }
+  /* 三個角色各包成一顆膠囊，中文會在任意字元換行，
+     整行直接丟出去會斷在「猜題猴：閉／眼」這種地方 */
+  .rolebar{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:.6rem 1.1rem;
+    margin-top:2rem;
+    max-width:76rem;
+  }
+  .rolebar span{
+    white-space:nowrap;
+    padding:.35rem 1.2rem;
+    border-radius:999px;
+    background:#fff;
+    border:.12rem solid rgba(122,85,38,.22);
+    box-shadow:0 .16rem 0 rgba(90,52,18,.10);
+    font-size:1.5rem;
+    font-weight:800;
+    color:var(--ink-2);
+  }
+  .rolebar b{color:var(--ink);font-weight:900;}
+
   .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--ink-2);opacity:.8;font-weight:800;}
   .term--demo{background:linear-gradient(150deg,#7DBB3A 0%,#0E8C8F 60%,#12758F 100%);
     -webkit-background-clip:text;background-clip:text;}
@@ -1280,8 +1303,7 @@
         }).join("") +
       "</div>" +
       '<p class="lede quiet" style="font-size:1.3rem">' +
-        "比劃猴面對投影幕，傳話猴和猜題猴背對投影幕。其他人可以看，但不准出聲提示。<br>" +
-        "最後把畫出來的圖跟原題比一比——落差就是笑點。</p>";
+        "比劃猴面對投影幕，傳話猴和猜題猴背對投影幕。其他人可以看，但不准出聲提示。</p>";
   };
 
   VIEWS.monkeyPlay = function () {
@@ -1295,8 +1317,11 @@
                 : "第 " + termAt + " 題　/　共 " + real + " 題") +
       "</p>" +
       '<div class="term' + (t.demo ? " term--demo" : "") + '">' + esc(t.t) + "</div>" +
-      '<p class="lede quiet" style="margin-top:1.8rem">' +
-        "🙊 比劃猴：只能比，不能說 · 🙉 傳話猴：只能說 · 🙈 猜題猴：閉眼，用畫的</p>" +
+      '<div class="rolebar">' +
+        MONKEY.ROLES.map(function (r) {
+          return "<span>" + r.emoji + " <b>" + esc(r.name) + "</b>：" + esc(r.short) + "</span>";
+        }).join("") +
+      "</div>" +
       (last ? '<p class="eyebrow" style="margin-top:1.2rem">最後一題　按 Shift + → 繼續</p>' : "");
   };
 
@@ -1437,8 +1462,8 @@
           '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
         "</div>" +
         "<div>" +
-          '<h1 class="big">歡迎上船</h1>' +
-          "<p>每週三 18:30，伙食團等你來開伙</p>" +
+          '<h1 class="big">歡迎加入伙食團</h1>' +
+          "<p>每週三 18:30，等你來開伙</p>" +
         "</div>" +
       "</div>" +
       '<div class="ends">' +
