@@ -10,9 +10,9 @@
 window.CDVC_PHOTOS = [
   { src: "media/photos/01.jpg", alt: "淨灘結束，全隊面向大海", span: "big" },
   { src: "media/photos/02.jpg", alt: "浪浪之家，抱著黑狗的志工", span: "tall" },
-  { src: "media/photos/03.jpg", alt: "獨居長輩家戶服務" },
-  { src: "media/photos/04.jpg", alt: "河濱公園環保志工" },
+  { src: "media/photos/03.jpg", alt: "狗場志工大合照" },
+  { src: "media/photos/04.jpg", alt: "這是今日成果" },
   { src: "media/photos/05.jpg", alt: "海邊淨灘，撿拾漂流垃圾" },
-  { src: "media/photos/06.jpg", alt: "騎單車沿河濱撿垃圾" },
+  { src: "media/photos/06.jpg", alt: "騎單車沿河濱環境志工" },
   { src: "media/photos/07.jpg", alt: "兒童營隊大合照", span: "wide" }
 ];
