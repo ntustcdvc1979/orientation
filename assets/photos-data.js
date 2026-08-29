@@ -14,7 +14,7 @@ window.CDVC_PHOTOS = {
   kitchen: {
     eyebrow: "第二段・找到同伴",
     title: "這就是我們平常開伙的樣子",
-    lede: "每週三 18:30，這群人就在廚房裡。<br>從洗米切菜到收拾，都是一起做完的。",
+    lede: "每週三 18:30，蔬食開伙，歡迎下課後來用餐。<br>如果早一點來，學長姐手把手教你煮飯喔。",
     items: [
       { src: "media/photos/a0.webp", alt: "伙食團開伙" },
       { src: "media/photos/a1.webp", alt: "一起備料" },

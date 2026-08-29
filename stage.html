@@ -489,6 +489,40 @@
     animation:pop .4s ease-out;
   }
 
+  /* ---------- 結束卡 ---------- */
+  .logos{display:flex;align-items:center;justify-content:center;gap:1.4rem;}
+  .logos img{height:5rem;width:auto;display:block;}
+  .logos img.mini{height:4.2rem;}
+
+  .ends{
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    gap:2rem;
+    margin-top:1.2rem;
+    width:100%;
+  }
+  .end{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.6rem;
+  }
+  .end__pic{
+    background:#fff;
+    border:.28rem solid #fff;
+    border-radius:.5rem;
+    box-shadow:0 .3rem .9rem rgba(90,52,18,.28);
+    line-height:0;
+  }
+  .end__pic img{display:block;}
+  .end__pic .qr{padding:0;border-radius:0;}
+  .end--qr .end__pic img,
+  .end--qr .end__pic svg{width:min(13rem,17vw);height:auto;}
+  .end--cal .end__pic img{height:min(42vh,26rem);width:auto;}
+  .end__title{font-size:1.5rem;font-weight:900;color:var(--flame);}
+  .end__sub{font-size:1.05rem;font-weight:800;color:var(--ink-2);line-height:1.5;text-align:center;}
+
   /* ---------- 影片 ---------- */
   .video{position:fixed;inset:0;z-index:2;background:#000;display:grid;place-items:center;}
   .video video{width:100%;height:100%;object-fit:contain;background:#000;}
@@ -681,7 +715,7 @@
 
   add({ part: "end", kind: "finale", label: "終章：寶藏就在你身上" });
   add({ part: "end", kind: "video", label: "▶ 法船影片" });
-  add({ part: "end", kind: "outro", label: "結束卡" });
+  add({ part: "end", kind: "outro", label: "結束卡", music: "media/崇德禮讚.mp3" });
 
   /* ============================================================
      狀態
@@ -732,7 +766,7 @@
 
     renderRail();
     renderBar();
-    tune(sc.part);
+    tune(sc);
     broadcast();
   }
 
@@ -765,7 +799,10 @@
     return '' +
       '<div class="cover">' +
         '<div>' +
-          '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社">' +
+          '<div class="logos" style="justify-content:flex-start;margin-bottom:1rem">' +
+            '<img src="assets/logo1.webp" alt="崇德志工社">' +
+            '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
+          "</div>" +
           '<p class="eyebrow">台科大天心伙食團 迎新</p>' +
           '<h1 class="huge">尋寶啟航</h1>' +
           '<p class="lede">傳說島上藏著一個寶藏。<br>讓我們踏上冒險一起尋找它吧！</p>' +
@@ -830,7 +867,7 @@
       q2: ["🍲", "第二段旅程", "找到同伴",
            "一人在外不知道怎麼吃才會營養？<br>走進伙食團，就有熱騰騰的飯菜，<br>還有陪你一起成長的夥伴！"],
       q3: ["🤝", "第三段旅程", "實踐服務",
-           "知道自己是誰、身邊有誰之後，剩下的就是真的去做。<br>看得到的不能說，說得出的看不到——這就是服務現場。"],
+           "行萬里路，勝讀萬卷書。<br>一起上山下海出隊的崇德志工社。"],
       q4: ["💎", "終　　點", "開寶箱",
            "四段旅程走完了。<br>把箱子打開之前，讓我們．．．"]
     }[sc.part];
@@ -1334,14 +1371,30 @@
 
   VIEWS.outro = function () {
     return '' +
-      '<img class="cover__logo" src="assets/logo1.webp" alt="崇德志工社" style="width:9rem">' +
-      '<h1 class="huge">歡迎上船</h1>' +
-      '<p class="lede">每週三 18:30，伙食團等你來開伙。</p>' +
-      '<div class="qr" id="qr2" style="width:16rem;margin:1.5rem auto 0;border:.35rem solid #fff;' +
-        'box-shadow:0 .4rem 1rem rgba(90,52,18,.25)"></div>' +
-      '<p class="eyebrow" style="margin-top:.8rem">追蹤我們</p>';
+      '<div class="logos">' +
+        '<img src="assets/logo1.webp" alt="崇德志工社">' +
+        '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
+      "</div>" +
+      '<h1 class="huge" style="margin-top:.4rem">歡迎上船</h1>' +
+      '<p class="lede" style="margin-top:.4rem">每週三 18:30，伙食團等你來開伙。</p>' +
+      '<div class="ends">' +
+        '<div class="end end--qr">' +
+          '<div class="end__pic"><img src="assets/signup-qr.webp" alt="活動報名 QR code"></div>' +
+          '<div class="end__title">活動報名</div>' +
+          '<div class="end__sub">填問卷抽電影票、超商禮券<br>9/15（二）19:00　TR509 茶會見</div>' +
+        "</div>" +
+        '<div class="end end--qr">' +
+          '<div class="end__pic"><div class="qr" id="qr2"></div></div>' +
+          '<div class="end__title">追蹤我們</div>' +
+          '<div class="end__sub">Instagram</div>' +
+        "</div>" +
+        '<div class="end end--cal">' +
+          '<div class="end__pic"><img src="assets/calendar.webp" alt="這學期的活動行事曆"></div>' +
+          '<div class="end__title">這學期的活動</div>' +
+          '<div class="end__sub">拍下來，別錯過</div>' +
+        "</div>" +
+      "</div>";
   };
-
   AFTER.outro = function () {
     var url = (window.CDVC_CONFIG || {}).socialUrl;
     if (!url) { return; }
@@ -1359,7 +1412,8 @@
     q1: "assets/quiz.mp3",
     q2: "assets/cook.mp3",
     q3: "assets/volunteer.mp3",
-    q4: "assets/volunteer.mp3"   // 開箱與大合照接著上一關的曲子
+    q4: "assets/volunteer.mp3"   // 開寶箱與大合照接著上一關的曲子
+    // 終章預設靜音，結束卡那一頁由畫面自己指定曲子（見流程裡的 music）
   };
 
   var VOLUME = 0.3;
@@ -1381,9 +1435,15 @@
     }, 40);
   }
 
-  /** 切到這一關該放的曲子 */
-  function tune(part) {
-    var src = muted ? "" : (MUSIC[part] || "");
+  /** 這個畫面該放什麼：畫面自己有指定就用它的，否則看這一關的 */
+  function trackFor(sc) {
+    if (sc.music !== undefined) { return sc.music || ""; }
+    return MUSIC[sc.part] || "";
+  }
+
+  /** 切到這個畫面該放的曲子 */
+  function tune(sc) {
+    var src = muted ? "" : trackFor(sc);
     if (src === nowSrc) { return; }
 
     if (nowPlaying) {
@@ -1436,7 +1496,7 @@
       nowPlaying = null;
       nowSrc = "";
     } else {
-      tune(S[i].part);
+      tune(S[i]);
     }
     paintMute();
   }

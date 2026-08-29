@@ -160,6 +160,7 @@ cp assets/firebase-config.sample.js assets/firebase-config.js
 | 🍲 找到同伴 | `assets/cook.mp3` |
 | 🤝 實踐服務・💎 開寶箱 | `assets/volunteer.mp3` |
 | 終章與影片 | 靜音（不跟影片打架） |
+| 結束卡 | `media/崇德禮讚.mp3` |
 
 瀏覽器規定要先有互動才能播聲音，所以**封面那頁是安靜的**，
 主持人按下第一個鍵之後音樂才會進來——這是正常的，不是壞了。
@@ -201,6 +202,7 @@ cp assets/firebase-config.sample.js assets/firebase-config.js
 | 💎 箱子打開了 | **收線**：「裡面沒有金幣，只有剛剛那張照片。」 |
 | 終章 | 「寶藏就在你身上。」講完按 <kbd>→</kbd> 播影片。 |
 | 影片 | 會自動重播，可以一直放著；要離開按 <kbd>→</kbd> 到結束卡。 |
+| 結束卡 | 崇德禮讚會自己放起來，畫面上有活動報名 QR、IG QR 與這學期的行事曆，可以停在這裡讓大家慢慢拍。 |
 
 食材卡任務的參考解答都寫在 [`assets/cards-data.js`](../assets/cards-data.js)，
 要改情境或增減食材，改那一個檔就好，投影幕會跟著變。

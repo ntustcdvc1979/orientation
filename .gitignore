@@ -148,3 +148,6 @@ assets/firebase-config.js
 
 # 照片原始 jpg：網頁只用轉好的 webp，原檔留在本機不進版本庫
 media/photos/original/
+
+# 圖片原檔：網頁只用轉好的 webp
+assets/original/

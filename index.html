@@ -17,7 +17,8 @@
       radial-gradient(44rem 28rem at 92% 6%, rgba(169,206,59,.22), transparent 62%);
   }
   .wrap{width:100%;max-width:44rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;}
-  .logo{width:min(9rem,36vw);height:auto;display:block;margin:0 auto .75rem;}
+  .logos{display:flex;align-items:center;justify-content:center;gap:.9rem;margin-bottom:.75rem;}
+  .logos img{height:min(4.5rem,18vw);width:auto;display:block;}
   h1{margin:.25rem 0 .5rem;text-align:center;font-size:clamp(1.8rem,6vw,2.6rem);font-weight:900;}
   h1 em{font-style:normal;background:linear-gradient(180deg,transparent 62%,rgba(169,206,59,.55) 62%);}
   .lede{text-align:center;color:var(--ink-soft);margin:0 auto 2rem;max-width:28rem;}
@@ -51,7 +52,10 @@
 </head>
 <body>
 <main class="wrap">
-  <img class="logo" src="assets/logo1.webp" alt="台科大崇德志工社社徽">
+  <div class="logos">
+    <img src="assets/logo1.webp" alt="台科大崇德志工社社徽">
+    <img src="assets/logo2.webp" alt="台科大崇德志工社">
+  </div>
   <h1>迎新<em>尋寶啟航</em></h1>
   <p class="lede">四段旅程，一箱寶藏。這裡是活動現場用的兩個畫面。</p>
 

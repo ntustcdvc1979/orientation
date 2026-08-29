@@ -22,7 +22,7 @@
 | 🍲 | **找到同伴** | 食材卡三個情境，全部從新生的角度出發：外食一週、熬夜爆肝、一個人在外地——走進伙食團，這些都有得救。收尾放六張平常開伙的照片 |
 | 🤝 | **實踐服務** | 三隻猴子：一個閉眼、一個只能比、一個只能說。收尾放仲由夫子那段話，再把社團做過的服務照片鋪滿投影幕，最後翻到海外義診交流 |
 | 💎 | **開寶箱** | 全體大合照，然後打開箱子——裡面沒有金幣，只有剛剛那張照片 |
-| ⛵ | 終章 | 「寶藏就在你身上」，法船啟航影片（自動重播） |
+| ⛵ | 終章 | 「寶藏就在你身上」，法船啟航影片（自動重播）。結束卡放崇德禮讚，附活動報名 QR、IG QR 與這學期行事曆 |
 
 ## 開始之前
 
@@ -63,7 +63,11 @@ assets/
   qrcode.js                    自製 QR 產生器，不依賴任何外部服務
   quiz.mp3 cook.mp3            各關的配樂，跨關自動淡出淡入
   volunteer.mp3
+  logo1.webp logo2.webp        兩顆社徽
+  signup-qr.webp               活動報名 QR（從 2026問卷.png 裁出來的）
+  calendar.webp                這學期的行事曆
 media/ship_moving.mp4          結尾影片，自動重播
+media/崇德禮讚.mp3             結束卡的配樂
 media/photos/                  照片牆的圖檔，一律 webp（原始 jpg 在 original/，不進 git）
 docs/                          設定手冊與食材卡 PDF
 .github/workflows/deploy.yml   部署，順便把 secret 寫成 firebase-config.js
