@@ -450,32 +450,31 @@
   .quote cite::before{content:"—— ";}
 
   /* ---------- 照片牆 ---------- */
+  /* 同一列等高、寬度照原始比例，所以每張照片都完整呈現，
+     不裁切也不留黑邊。實際高度由 JS 依張數與比例算出來。 */
   .wall{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    grid-auto-rows:1fr;
-    grid-auto-flow:dense;
-    gap:.9rem;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-content:center;
+    gap:.7rem;
     width:100%;
-    max-width:88rem;
+    max-width:92rem;
     height:62vh;
-    margin-top:1rem;
+    margin-top:.8rem;
   }
   .wall figure{
+    flex:0 0 auto;
     margin:0;
-    overflow:hidden;
-    border:.3rem solid #fff;
-    border-radius:.4rem;
+    border:.28rem solid #fff;
+    border-radius:.35rem;
     box-shadow:0 .3rem .8rem rgba(90,52,18,.28);
     background:var(--paper-2);
+    line-height:0;
   }
-  .wall figure:nth-child(odd){transform:rotate(-.7deg);}
-  .wall figure:nth-child(even){transform:rotate(.7deg);}
-  /* 直式照片給它兩列高，不然 object-fit 會把人臉裁掉 */
-  .wall .big{grid-column:span 2;grid-row:span 2;transform:rotate(0);}
-  .wall .tall{grid-row:span 2;}
-  .wall .wide{grid-column:span 2;}
-  .wall img{width:100%;height:100%;object-fit:cover;display:block;}
+  .wall figure:nth-child(odd){transform:rotate(-.6deg);}
+  .wall figure:nth-child(even){transform:rotate(.6deg);}
+  .wall img{display:block;height:100%;width:auto;}
   .wall--empty{
     display:block;height:auto;
     padding:2rem;text-align:center;
@@ -638,7 +637,7 @@
     q1: { name: "第一關・認識自己", key: "🧭" },
     q2: { name: "第二關・找到同伴", key: "🍲" },
     q3: { name: "第三關・實踐服務", key: "🤝" },
-    q4: { name: "第四關・開箱", key: "💎" },
+    q4: { name: "第四關・開寶箱", key: "💎" },
     end: { name: "終章・啟航" }
   };
 
@@ -667,14 +666,16 @@
   });
   add({ part: "q2", kind: "finalMission", label: "終極任務・為一個人做一餐" });
   add({ part: "q2", kind: "key", n: 2, label: "🍲 第二段旅程完成" });
+  add({ part: "q2", kind: "photos", set: "kitchen", label: "★ 開伙的樣子" });
 
   add({ part: "q3", kind: "partTitle", label: "第三關 標題・實踐服務" });
   add({ part: "q3", kind: "monkeyRules", label: "三隻猴子 規則" });
   add({ part: "q3", kind: "monkeyPlay", label: "★ 三隻猴子 出題" });
   add({ part: "q3", kind: "key", n: 3, label: "🤝 第三段旅程完成" });
-  add({ part: "q3", kind: "photos", label: "★ 志工照片牆" });
+  add({ part: "q3", kind: "photos", set: "service", label: "★ 志工照片牆" });
+  add({ part: "q3", kind: "photos", set: "global", label: "★ 海外義診交流" });
 
-  add({ part: "q4", kind: "partTitle", label: "第四關 標題・開箱" });
+  add({ part: "q4", kind: "partTitle", label: "第四關 標題・開寶箱" });
   add({ part: "q4", kind: "photo", label: "★ 大合照" });
   add({ part: "q4", kind: "key", n: 4, label: "💎 箱子打開了" });
 
@@ -830,7 +831,7 @@
            "一人在外不知道怎麼吃才會營養？<br>走進伙食團，就有熱騰騰的飯菜，<br>還有陪你一起成長的夥伴！"],
       q3: ["🤝", "第三段旅程", "實踐服務",
            "知道自己是誰、身邊有誰之後，剩下的就是真的去做。<br>看得到的不能說，說得出的看不到——這就是服務現場。"],
-      q4: ["💎", "終　　點", "開箱",
+      q4: ["💎", "終　　點", "開寶箱",
            "四段旅程走完了。<br>把箱子打開之前，讓我們．．．"]
     }[sc.part];
     return '' +
@@ -985,6 +986,21 @@
 
     /* 一次掃完所有重疊、把位移累加起來再一起套用（並且加阻尼），
        比邊掃邊移穩定很多，不然後面的推擠會把前面的成果推回去。 */
+    /* 四角的象限說明框與座標軸文字是固定的，把它們當成推不動的障礙物，
+       名牌只會被推開、不會壓到上面的字 */
+    var mapBox = box.getBoundingClientRect();
+    var walls = Array.prototype.map.call(
+      box.querySelectorAll(".map__q, .map__ax"),
+      function (w) {
+        var r = w.getBoundingClientRect();
+        return {
+          x: r.left - mapBox.left + r.width / 2,
+          y: r.top - mapBox.top + r.height / 2,
+          w: r.width,
+          h: r.height
+        };
+      });
+
     var padX = 8, padY = 5;
     var dxs = new Array(items.length);
     var dys = new Array(items.length);
@@ -1010,6 +1026,20 @@
             var sx = (dx >= 0 ? 1 : -1) * ox / 2;
             dxs[a] -= sx; dxs[b] += sx;
           }
+        }
+      }
+
+      // 障礙物只推別人、自己不動
+      for (var wi = 0; wi < walls.length; wi++) {
+        for (var ii = 0; ii < items.length; ii++) {
+          var It = items[ii], Wl = walls[wi];
+          var wdx = It.x - Wl.x, wdy = It.y - Wl.y;
+          var wox = (It.w + Wl.w) / 2 + padX - Math.abs(wdx);
+          var woy = (It.h + Wl.h) / 2 + padY - Math.abs(wdy);
+          if (wox <= 0 || woy <= 0) { continue; }
+          hit = true;
+          if (woy <= wox) { dys[ii] += (wdy >= 0 ? 1 : -1) * woy; }
+          else { dxs[ii] += (wdx >= 0 ? 1 : -1) * wox; }
         }
       }
 
@@ -1179,19 +1209,22 @@
       '<p class="lede quiet" style="margin-top:2rem">🙊 比劃猴：只能比，不能說 · 🙉 傳話猴：只能說 · 🙈 猜題猴：閉眼</p>';
   };
 
-  VIEWS.photos = function () {
-    var list = window.CDVC_PHOTOS || [];
-    if (!list.length) {
-      return '<p class="lede wall--empty">還沒有放照片。把檔案放進 media/photos/，' +
+  VIEWS.photos = function (sc) {
+    var set = (window.CDVC_PHOTOS || {})[sc.set];
+    var items = (set && set.items) || [];
+
+    if (!items.length) {
+      return '<p class="lede wall--empty">這一組還沒有照片。把檔案放進 media/photos/，' +
              '再到 assets/photos-data.js 補上清單。</p>';
     }
+
     return '' +
-      '<p class="eyebrow">這些，都是我們真的做過的事</p>' +
-      '<h1 class="big">為眾生服務，長這個樣子</h1>' +
+      '<p class="eyebrow">' + esc(set.eyebrow || "") + "</p>" +
+      '<h1 class="big">' + esc(set.title || "") + "</h1>" +
+      (set.lede ? '<p class="lede" style="margin-top:.6rem">' + set.lede + "</p>" : "") +
       '<div class="wall" id="wall">' +
-        list.map(function (ph) {
-          return '<figure class="' + esc(ph.span || "") + '">' +
-                 "<img src=\"" + esc(ph.src) + "\" alt=\"" + esc(ph.alt || "") + "\"></figure>";
+        items.map(function (ph) {
+          return "<figure><img src=\"" + esc(ph.src) + "\" alt=\"" + esc(ph.alt || "") + "\"></figure>";
         }).join("") +
       "</div>";
   };
@@ -1199,19 +1232,70 @@
   AFTER.photos = function (sc, el) {
     var wall = el.querySelector("#wall");
     if (!wall) { return; }
-    // 檔案還沒放進去的話就把那一格收掉，不要留一個破圖
-    Array.prototype.forEach.call(wall.querySelectorAll("img"), function (img) {
+
+    var figs = Array.prototype.slice.call(wall.querySelectorAll("figure"));
+    var pending = figs.length;
+
+    function done() { if (--pending <= 0) { layout(); } }
+
+    figs.forEach(function (fig) {
+      var img = fig.querySelector("img");
+      if (img.complete && img.naturalWidth) { done(); return; }
+      img.addEventListener("load", done);
       img.addEventListener("error", function () {
-        var fig = img.parentNode;
-        if (fig && fig.parentNode) { fig.parentNode.removeChild(fig); }
-        if (!wall.children.length) {
-          wall.className = "wall wall--empty";
-          wall.textContent = "照片還沒放進 media/photos/";
-        }
+        // 檔案還沒放進去就把那一格收掉，不要留破圖
+        if (fig.parentNode) { fig.parentNode.removeChild(fig); }
+        done();
       });
     });
-  };
 
+    /**
+     * 等高排版：同一列的照片高度一樣、寬度照原始比例，
+     * 二分搜出「排得下的最大高度」，照片就會剛好鋪滿又不被裁到。
+     */
+    function layout() {
+      var live = Array.prototype.slice.call(wall.querySelectorAll("figure"));
+      if (!live.length) {
+        wall.className = "wall wall--empty";
+        wall.textContent = "照片還沒放進 media/photos/";
+        return;
+      }
+
+      var W = wall.clientWidth, H = wall.clientHeight;
+      var cs = getComputedStyle(live[0]);
+      var frame = parseFloat(cs.borderLeftWidth) * 2;
+      var gap = parseFloat(getComputedStyle(wall).columnGap) || 10;
+
+      var shots = live.map(function (fig) {
+        var img = fig.querySelector("img");
+        var a = (img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : 1.5;
+        return { el: fig, img: img, a: a };
+      });
+
+      // 某個高度會排成幾列
+      function rowsAt(h) {
+        var rows = 1, used = 0;
+        for (var i = 0; i < shots.length; i++) {
+          var w = shots[i].a * h + frame;
+          if (used > 0 && used + gap + w > W) { rows++; used = w; }
+          else { used = used ? used + gap + w : w; }
+        }
+        return rows;
+      }
+
+      var lo = 40, hi = H, best = 40;
+      for (var n = 0; n < 40; n++) {
+        var mid = (lo + hi) / 2;
+        var r = rowsAt(mid);
+        if (r * (mid + frame) + (r - 1) * gap <= H) { best = mid; lo = mid; }
+        else { hi = mid; }
+      }
+
+      shots.forEach(function (sh) { sh.img.style.height = Math.floor(best) + "px"; });
+    }
+
+    if (!pending) { layout(); }
+  };
   VIEWS.photo = function () {
     if (photoCount > 0) {
       return '<div class="count3">' + (photoCount === 4 ? "📸" : photoCount) + "</div>";
@@ -1409,6 +1493,7 @@
       sub: sc.sub || null,
       mi: sc.mi === undefined ? null : sc.mi,
       pkey: sc.pkey || null,
+      set: sc.set || null,
       term: sc.kind === "monkeyPlay" ? deck[termAt % deck.length].t : null,
       total: S.length
     });
