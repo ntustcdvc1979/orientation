@@ -516,6 +516,15 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
     animation:pop .4s ease-out;
   }
+  /* emoji 是彩色字符，套上 background-clip:text + 透明字色會被裁成一片漸層剪影，
+     快門那一格要用原本的顏色畫 */
+  .count3--emoji{
+    background:none;
+    -webkit-background-clip:border-box;background-clip:border-box;
+    color:var(--ink);
+    line-height:1.3;
+    filter:drop-shadow(0 .4rem .8rem rgba(90,52,18,.28));
+  }
 
   /* ---------- 結束卡 ---------- */
   .logos{display:flex;align-items:center;justify-content:center;gap:1.4rem;}
@@ -1414,13 +1423,15 @@
   };
   VIEWS.photo = function () {
     if (photoCount > 0) {
-      return '<div class="count3">' + (photoCount === 4 ? "📸" : photoCount) + "</div>";
+      return (photoCount === 4)
+        ? '<div class="count3 count3--emoji">📸</div>'
+        : '<div class="count3">' + photoCount + "</div>";
     }
     return '' +
       '<span class="emoji">📸</span>' +
       '<h1 class="huge">全體船員集合</h1>' +
-      '<p class="lede">往中間靠，後排站高一點，<br>手上的食材卡舉起來。</p>' +
-      '<p class="big" style="margin-top:1.5rem;color:var(--flame)">口號：崇德——志工！</p>' +
+      '<p class="lede">往中間靠，後排站高一點。</p>' +
+      '<p class="big" style="margin-top:1.5rem;color:var(--flame)">口號：天大地大台科大！</p>' +
       '<p class="quiet" style="margin-top:1rem;font-size:1.2rem">主持人按 <kbd>T</kbd> 開始 3・2・1</p>';
   };
 
@@ -1434,8 +1445,8 @@
         }).join("") +
       "</div>" +
       '<h1 class="huge">寶藏就在你身上</h1>' +
-      '<p class="lede">你們找了一整晚——<br>認識了自己，遇到了同伴，也真的動手做了一次。<br>' +
-        "<b>那些東西，早就跟著你走進這個場地了。</b></p>" +
+      '<p class="lede">寶藏不在遠處，<br>寶藏就在每個人心中，<br>' +
+        "<b>台科大是你發光發亮的地方</b>。</p>" +
       '<p class="eyebrow" style="margin-top:2rem">按 → 啟航</p>';
   };
 
@@ -1462,7 +1473,7 @@
           '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
         "</div>" +
         "<div>" +
-          '<h1 class="big">歡迎加入伙食團</h1>' +
+          '<h1 class="big">台科天心伙食團</h1>' +
           "<p>每週三 18:30，等你來開伙</p>" +
         "</div>" +
       "</div>" +

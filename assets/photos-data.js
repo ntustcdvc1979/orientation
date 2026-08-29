@@ -28,7 +28,7 @@ window.CDVC_PHOTOS = {
   /* 第三段收尾：真的做過的服務 */
   service: {
     eyebrow: "這些，都是我們真的做過的事",
-    title: "為眾生服務的樣子",
+    title: "為大家服務的樣子",
     items: [
       { src: "media/photos/01.webp", alt: "淨灘結束，全隊面向大海" },
       { src: "media/photos/02.webp", alt: "浪浪之家，抱著黑狗的志工" },
