@@ -91,6 +91,9 @@
     box-shadow:0 0 0 .22rem rgba(242,167,44,.35), 0 .3rem .8rem rgba(90,52,18,.18);
   }
 
+  /* 結束卡東西多，邊界收窄，把高度讓給行事曆 */
+  main.screen--tight{padding:3.4rem 2.6rem 1.8rem;}
+
   main.screen{
     position:relative;
     z-index:1;
@@ -421,6 +424,8 @@
     animation:pop .35s ease-out;
   }
   .term__n{font-size:1.2rem;letter-spacing:.3em;color:var(--ink-2);opacity:.8;font-weight:800;}
+  .term--demo{background:linear-gradient(150deg,#7DBB3A 0%,#0E8C8F 60%,#12758F 100%);
+    -webkit-background-clip:text;background-clip:text;}
 
   /* ---------- 引言 ---------- */
   .quote{
@@ -494,35 +499,73 @@
   .logos img{height:5rem;width:auto;display:block;}
   .logos img.mini{height:4.2rem;}
 
+  /* 標題壓成一行，把高度留給右邊那張行事曆 */
+  .endhead{display:flex;align-items:center;justify-content:center;gap:1.8rem;text-align:left;}
+  .endhead .logos img{height:4.4rem;}
+  .endhead .logos img.mini{height:3.6rem;}
+  .endhead h1{margin:0;}
+  .endhead p{margin:.2rem 0 0;font-size:1.35rem;font-weight:800;color:var(--ink-2);}
+
+  /* 三塊各自分到一份寬度，圖片用 max-width/max-height 塞進自己的框，
+     所以不管投影機是 1024 還是 1920，都不會爆版、也不會被裁 */
   .ends{
     display:flex;
-    align-items:flex-start;
+    align-items:stretch;
     justify-content:center;
-    gap:2rem;
-    margin-top:1.2rem;
+    gap:1.6rem;
+    margin-top:.9rem;
     width:100%;
+    height:66vh;
   }
   .end{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:.6rem;
+    gap:.5rem;
+    min-height:0;
+    min-width:0;
   }
+  .end--qr{flex:0 0 16%;}
+  .end--promo{flex:0 0 42%;}
+  .end--cal{flex:0 0 30%;}
+
   .end__pic{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:.28rem;
     background:#fff;
-    border:.28rem solid #fff;
     border-radius:.5rem;
     box-shadow:0 .3rem .9rem rgba(90,52,18,.28);
-    line-height:0;
   }
-  .end__pic img{display:block;}
-  .end__pic .qr{padding:0;border-radius:0;}
-  .end--qr .end__pic img,
-  .end--qr .end__pic svg{width:min(13rem,17vw);height:auto;}
-  .end--cal .end__pic img{height:min(42vh,26rem);width:auto;}
-  .end__title{font-size:1.5rem;font-weight:900;color:var(--flame);}
-  .end__sub{font-size:1.05rem;font-weight:800;color:var(--ink-2);line-height:1.5;text-align:center;}
+  .end__pic img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;}
+  /* QR 不用撐滿整個高度，方形就好 */
+  .end--qr .end__pic{flex:0 0 auto;align-self:center;}
 
+  .end__title{flex:none;font-size:1.5rem;font-weight:900;color:var(--flame);}
+
+  /* 固定三欄兩排，六張宣傳圖各自照原比例縮進格子裡 */
+  .promo{
+    flex:1 1 auto;
+    min-height:0;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    gap:.55rem;
+    width:100%;
+    place-items:center;
+  }
+  .promo img{
+    max-width:100%;
+    max-height:100%;
+    width:auto;height:auto;
+    display:block;
+    border:.2rem solid #fff;
+    border-radius:.35rem;
+    box-shadow:0 .2rem .55rem rgba(90,52,18,.24);
+  }
   /* ---------- 影片 ---------- */
   .video{position:fixed;inset:0;z-index:2;background:#000;display:grid;place-items:center;}
   .video video{width:100%;height:100%;object-fit:contain;background:#000;}
@@ -723,7 +766,7 @@
   var i = 0;                    // 目前畫面
   var players = {};             // 從連線層來的
   var timer = { left: 0, total: 0, running: false };
-  var deck = MONKEY.shuffled();
+  var deck = MONKEY.deck();
   var termAt = 0;
   var photoCount = 0;
 
@@ -755,7 +798,7 @@
   function render() {
     var sc = S[i];
     var el = $("screen");
-    el.className = "screen";
+    el.className = "screen" + (sc.kind === "outro" ? " screen--tight" : "");
 
     // 影片離開時要停掉，不然聲音會跟著下一頁
     var oldVideo = el.querySelector("video");
@@ -1226,7 +1269,8 @@
   VIEWS.monkeyRules = function () {
     return '' +
       '<h1 class="big">三隻猴子</h1>' +
-      '<p class="lede">三個人一組，站成一直線。題目只有比劃猴看得到。</p>' +
+      '<p class="lede">三個人一組，站成一直線。題目只有比劃猴看得到，' +
+        '<b>答案不是用講的，是用畫的</b>。</p>' +
       '<div class="roles">' +
         MONKEY.ROLES.map(function (r) {
           return '<div class="role"><div class="role__e">' + r.emoji + "</div>" +
@@ -1235,15 +1279,24 @@
         }).join("") +
       "</div>" +
       '<p class="lede quiet" style="font-size:1.3rem">' +
-        "比劃猴面對投影幕，傳話猴和猜題猴背對投影幕。<br>其他人可以看，但不准出聲提示。</p>";
+        "比劃猴面對投影幕，傳話猴和猜題猴背對投影幕。其他人可以看，但不准出聲提示。<br>" +
+        "最後把畫出來的圖跟原題比一比——落差就是笑點。</p>";
   };
 
   VIEWS.monkeyPlay = function () {
-    var t = deck[termAt % deck.length];
+    var t = deck[termAt];
+    var real = deck.filter(function (x) { return !x.demo; }).length;
+    var last = (termAt === deck.length - 1);
+
     return '' +
-      '<p class="term__n">第 ' + (termAt + 1) + " 題　/　題庫共 " + deck.length + " 題</p>" +
-      '<div class="term">' + esc(t.t) + "</div>" +
-      '<p class="lede quiet" style="margin-top:2rem">🙊 比劃猴：只能比，不能說 · 🙉 傳話猴：只能說 · 🙈 猜題猴：閉眼</p>';
+      '<p class="term__n">' +
+        (t.demo ? "範例題　先示範一次，大家看懂規則再開始"
+                : "第 " + termAt + " 題　/　共 " + real + " 題") +
+      "</p>" +
+      '<div class="term' + (t.demo ? " term--demo" : "") + '">' + esc(t.t) + "</div>" +
+      '<p class="lede quiet" style="margin-top:1.8rem">' +
+        "🙊 比劃猴：只能比，不能說 · 🙉 傳話猴：只能說 · 🙈 猜題猴：閉眼，用畫的</p>" +
+      (last ? '<p class="eyebrow" style="margin-top:1.2rem">最後一題　按 Shift + → 繼續</p>' : "");
   };
 
   VIEWS.photos = function (sc) {
@@ -1369,38 +1422,43 @@
     v.play()["catch"](function () { /* 瀏覽器擋掉就讓主持人自己按 */ });
   };
 
+  /* 最後一頁：傳送門、近期活動、行事曆 */
+  var PROMOS = [
+    "donut", "boardgamenight", "mt_cleanup",
+    "midmoon", "teaparty", "tiramisu"
+  ];
+
   VIEWS.outro = function () {
     return '' +
-      '<div class="logos">' +
-        '<img src="assets/logo1.webp" alt="崇德志工社">' +
-        '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
+      '<div class="endhead">' +
+        '<div class="logos">' +
+          '<img src="assets/logo1.webp" alt="崇德志工社">' +
+          '<img class="mini" src="assets/logo2.webp" alt="崇德志工社">' +
+        "</div>" +
+        "<div>" +
+          '<h1 class="big">歡迎上船</h1>' +
+          "<p>每週三 18:30，伙食團等你來開伙</p>" +
+        "</div>" +
       "</div>" +
-      '<h1 class="huge" style="margin-top:.4rem">歡迎上船</h1>' +
-      '<p class="lede" style="margin-top:.4rem">每週三 18:30，伙食團等你來開伙。</p>' +
       '<div class="ends">' +
         '<div class="end end--qr">' +
           '<div class="end__pic"><img src="assets/signup-qr.webp" alt="活動報名 QR code"></div>' +
-          '<div class="end__title">活動報名</div>' +
-          '<div class="end__sub">填問卷抽電影票、超商禮券<br>9/15（二）19:00　TR509 茶會見</div>' +
+          '<div class="end__title">傳送門</div>' +
         "</div>" +
-        '<div class="end end--qr">' +
-          '<div class="end__pic"><div class="qr" id="qr2"></div></div>' +
-          '<div class="end__title">追蹤我們</div>' +
-          '<div class="end__sub">Instagram</div>' +
+        '<div class="end end--promo">' +
+          '<div class="promo">' +
+            PROMOS.map(function (n) {
+              return '<img src="assets/' + n + '.webp" alt="近期活動">';
+            }).join("") +
+          "</div>" +
+          '<div class="end__title">近期活動</div>' +
         "</div>" +
         '<div class="end end--cal">' +
           '<div class="end__pic"><img src="assets/calendar.webp" alt="這學期的活動行事曆"></div>' +
-          '<div class="end__title">這學期的活動</div>' +
-          '<div class="end__sub">拍下來，別錯過</div>' +
+          '<div class="end__title">這學期的行事曆</div>' +
         "</div>" +
       "</div>";
   };
-  AFTER.outro = function () {
-    var url = (window.CDVC_CONFIG || {}).socialUrl;
-    if (!url) { return; }
-    try { $("qr2").innerHTML = QR.svg(url, { dark: "#40260F" }); } catch (e) { /* 忽略 */ }
-  };
-
   /* ============================================================
      配樂
 
@@ -1554,7 +1612,7 @@
       mi: sc.mi === undefined ? null : sc.mi,
       pkey: sc.pkey || null,
       set: sc.set || null,
-      term: sc.kind === "monkeyPlay" ? deck[termAt % deck.length].t : null,
+      term: sc.kind === "monkeyPlay" ? deck[termAt].t : null,
       total: S.length
     });
   }
@@ -1574,8 +1632,7 @@
       e.preventDefault();
       // 三隻猴子停在同一頁換題，Shift 才離開
       if (sc.kind === "monkeyPlay" && !e.shiftKey) {
-        termAt++;
-        render();
+        if (termAt < deck.length - 1) { termAt++; render(); }
         return;
       }
       go(1);
@@ -1608,7 +1665,7 @@
 
     if (k === "r") {
       if (sc.kind === "mission" && sc.sub === "ask") { startTimer(90); }
-      if (sc.kind === "monkeyPlay") { deck = MONKEY.shuffled(); termAt = 0; render(); }
+      if (sc.kind === "monkeyPlay") { termAt = 0; render(); }
       if (sc.kind === "photo") { photoCount = 0; render(); }
       return;
     }

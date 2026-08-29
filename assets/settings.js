@@ -15,7 +15,7 @@ window.CDVC_CONFIG = {
      若投影幕是本機開檔、手機要連線上版，就把正式網址填在這裡。 */
   playUrl: "",
 
-  /* 結束卡上的社群連結，會做成 QR */
+  /* 社群連結。結束卡改放活動宣傳之後目前沒有用到，留著以備不時之需。 */
   socialUrl: "https://www.instagram.com/ntustcdvc/",
 
   /* 由 assets/firebase-config.js 覆寫。留 null = 本機模式。 */
