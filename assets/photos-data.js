@@ -40,6 +40,16 @@ window.CDVC_PHOTOS = {
     ]
   },
 
+  /* 第三段收尾之後：災難現場 */
+  relief: {
+    eyebrow: "服務不挑地點",
+    title: "賑災在哪，我們就在哪",
+    lede: "醫療關懷隊帶著血壓計、血氧機和物資出隊。<br>不是等一切都好了才去，是<b>需要的時候就在</b>。",
+    items: [
+      { src: "media/photos/10.webp", alt: "醫療關懷隊在災區服務" }
+    ]
+  },
+
   /* 第三段收尾之後：服務不只在台灣 */
   global: {
     eyebrow: "而且不只在台灣",
